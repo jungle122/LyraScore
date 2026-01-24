@@ -1,0 +1,13 @@
+# 微信开发者工具的临时文件
+node_modules/
+miniprogram_npm/
+.idea/
+.vscode/
+.DS_Store
+
+# 包含了你个人配置和最近打开文件记录的隐私文件 (一定要忽略！)
+project.private.config.json
+
+# 编译后的文件 (如果有)
+unpackage/
+dist/

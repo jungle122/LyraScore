@@ -1,0 +1,102 @@
+<view class="container">
+  <!-- 歌名 (大标题) -->
+  <input 
+    class="title-input" 
+    placeholder="请输入歌名..." 
+    placeholder-class="placeholder-style" 
+    model:value="{{title}}" 
+  />
+
+  <!-- ✨ 新增：歌手 (小标题，可选) -->
+  <input 
+    class="artist-input" 
+    placeholder="歌手/乐队 (可选)" 
+    placeholder-class="placeholder-style" 
+    model:value="{{artist}}" 
+  />
+
+  <!-- 自制谱模式 -->
+  <view class="form-area" wx:if="{{type === 'blank'}}">
+    
+<!-- 第一行：调性相关 -->
+<view class="meta-row">
+      <view class="meta-item">
+        <text>选调</text>
+        <input value="{{key}}" class="small-input" model:value="{{key}}" />
+      </view>
+      <view class="meta-item">
+        <text>原调</text>
+        <input value="{{originalKey}}" class="small-input" model:value="{{originalKey}}" />
+      </view>
+      <view class="meta-item">
+        <text>Capo</text>
+        <input value="{{capo}}" class="small-input" model:value="{{capo}}" />
+      </view>
+    </view>
+
+    <!-- 第二行：节奏与设置 -->
+    <view class="meta-row">
+      <view class="meta-item">
+        <text>拍号</text>
+        <input value="{{timeSignature}}" class="small-input" model:value="{{timeSignature}}" />
+      </view>
+      <view class="meta-item">
+        <text>BPM</text>
+        <input value="{{bpm}}" class="small-input" model:value="{{bpm}}" />
+      </view>
+      <!-- ✨ 第六个方块：调弦 -->
+      <view class="meta-item">
+        <text>调弦</text>
+        <!-- 这里的 input 稍微宽一点，因为“标准”是两个字，Drop D 是英文 -->
+        <input value="{{tuning}}" class="small-input" style="width: 80rpx;" model:value="{{tuning}}" />
+      </view>
+    </view>
+
+    <!-- 歌词区域：用 value 绑定初始值来实现“假 placeholder”的换行效果 -->
+    <!-- 注意：如果用户还没输入内容，我们就不显示这个 value，这里先用 placeholder -->
+    <textarea 
+      class="lyrics-editor" 
+      placeholder="{{placeholderText}}" 
+      maxlength="-1" 
+      auto-height
+      model:value="{{content}}"
+    />
+  </view>
+
+  <!-- 纸质谱模式 -->
+  <view class="form-area" wx:if="{{type === 'paper'}}">
+    <view class="paper-row">
+      <text class="label-text">曲谱位于：</text>
+      <input class="location-input" placeholder="例如：《弹指之间》P68" model:value="{{location}}" />
+    </view>
+  </view>
+<!-- ✨ 模式C：图片谱模式 (多图版) -->
+<view class="form-area" wx:if="{{type === 'image'}}">
+    
+    <view class="image-grid">
+      <!-- 遍历已选图片 -->
+      <view class="grid-item" wx:for="{{imagePaths}}" wx:key="*this">
+        <!-- ✨ 核心修改：加上 bindtap 和 data-url -->
+        <image 
+          src="{{item}}" 
+          mode="aspectFill" 
+          class="thumb-img" 
+          bindtap="previewCurrent" 
+          data-url="{{item}}"
+        />
+        <!-- 删除小按钮 -->
+        <view class="delete-tag" catchtap="removeImage" data-index="{{index}}">x</view>
+      </view>
+
+      <!-- 加号按钮 -->
+      <view class="grid-item add-btn" bindtap="chooseImage">
+        <text style="font-size: 50rpx; color: #ccc;">+</text>
+      </view>
+    </view>
+    
+    <text class="hint-text">最多可选9张，点击 x 删除</text>
+  </view>
+    <!-- 保存按钮 -->
+  <!-- bindtap="save" 意思是：点击这个按钮，就去执行 JS 里的 save 函数 -->
+  <button class="save-btn" bindtap="save">完成并保存</button>
+</view>

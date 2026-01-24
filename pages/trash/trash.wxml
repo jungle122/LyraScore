@@ -1,0 +1,36 @@
+<view class="container">
+  
+  <view class="header">
+    <text class="title">回收站</text>
+    <text class="subtitle">有效期30天，过期自动清理</text>
+  </view>
+
+  <view class="list">
+    <block wx:for="{{trashList}}" wx:key="id">
+      <view class="trash-card">
+        
+        <!-- 左侧信息 -->
+        <view class="info">
+          <text class="song-title">{{item.title}}</text>
+          <text class="expire-tip">⚠️ {{item.daysLeft}}天后过期</text>
+        </view>
+
+        <!-- 右侧按钮组 -->
+        <view class="actions">
+          <!-- 恢复按钮 -->
+          <view class="btn recover" bindtap="recoverSong" data-id="{{item.id}}">恢复</view>
+          <!-- 彻底删除按钮 -->
+          <view class="btn delete" bindtap="deleteForever" data-id="{{item.id}}">销毁</view>
+        </view>
+
+      </view>
+    </block>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty" wx:if="{{trashList.length === 0}}">
+    <text>回收站是空的</text>
+    <text style="font-size: 24rpx; margin-top: 10rpx;">(没有任何后悔药)</text>
+  </view>
+
+</view>

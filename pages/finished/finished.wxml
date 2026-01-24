@@ -1,0 +1,32 @@
+<view class="container">
+  
+  <!-- ✨ 标题修改 -->
+  <view class="header">
+    <text class="header-title">已练完</text>
+    <text class="header-subtitle">Well Done!</text>
+  </view>
+
+  <!-- 列表结构完全复用 -->
+  <view class="song-list">
+    <block wx:for="{{songList}}" wx:key="id">
+      <view class="song-card" bindtap="goToDetail" data-id="{{item.id}}">
+        <view class="card-info">
+          <text class="song-title">{{item.title}}</text>
+          <text class="song-artist" wx:if="{{item.artist}}">{{item.artist}}</text>
+          <text class="song-meta" wx:if="{{item.type === 'paper'}}">📍 {{item.location}}</text>
+          <text class="song-meta" wx:if="{{item.type === 'blank'}}">🎼 {{item.key}}调 | {{item.bpm}} BPM</text>
+        </view>
+        <view class="card-tag {{item.type}}">
+          {{item.type === 'blank' ? '自制' : (item.type === 'paper' ? '归档' : '图片')}}
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 空状态修改 -->
+  <view class="empty-state" wx:if="{{songList.length === 0}}">
+    <text>还没有练完的曲谱</text>
+    <text>快去练习吧！</text>
+  </view>
+
+</view>

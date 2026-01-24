@@ -1,0 +1,58 @@
+<view class="container">
+  
+  <!-- 1. 搜索框区域 -->
+  <view class="search-bar">
+    <view class="search-input-box">
+      <text class="search-icon">🔍</text>
+      <!-- bindinput: 每次打字都触发 -->
+      <!-- confirm-type="search": 键盘右下角显示“搜索” -->
+      <input 
+        class="search-input" 
+        placeholder="搜索歌名或歌手..." 
+        confirm-type="search"
+        bindinput="onSearchInput"
+        model:value="{{keyword}}"
+      />
+      <!-- 清空按钮 (只有输入了字才显示) -->
+      <view class="clear-btn" wx:if="{{keyword.length > 0}}" bindtap="clearSearch">x</view>
+    </view>
+  </view>
+
+  <!-- 2. 搜索结果列表 (复用卡片样式) -->
+  <view class="result-area">
+    
+    <!-- A. 如果有输入，且有结果 -->
+    <block wx:if="{{keyword.length > 0 && resultList.length > 0}}">
+      <view class="section-header">搜索结果</view>
+      <block wx:for="{{resultList}}" wx:key="id">
+        <view class="song-card" bindtap="goToDetail" data-id="{{item.id}}">
+          <view class="card-info">
+            <!-- 这里我们可以做一个小亮点：高亮匹配的文字 (暂时先不做，保持简单) -->
+            <text class="song-title">{{item.title}}</text>
+            <text class="song-artist" wx:if="{{item.artist}}">{{item.artist}}</text>
+            <text class="song-meta">
+               {{item.status === 'practicing' ? '🔥 正在练' : (item.status === 'finished' ? '✅ 已练完' : '🗑️ 回收站')}}
+            </text>
+          </view>
+          <view class="card-tag {{item.type}}">
+            {{item.type === 'blank' ? '自制' : (item.type === 'paper' ? '归档' : '图片')}}
+          </view>
+        </view>
+      </block>
+    </block>
+
+    <!-- B. 如果有输入，但没结果 -->
+    <view class="empty-result" wx:if="{{keyword.length > 0 && resultList.length === 0}}">
+      <text>🤔</text>
+      <text>找不到和“{{keyword}}”相关的曲谱</text>
+    </view>
+
+    <!-- C. 初始状态 (没输入) - 显示搜索记录 (根据Page 7草图) -->
+    <!-- 暂时不做复杂的历史记录，先显示一个友好的提示 -->
+    <view class="empty-start" wx:if="{{keyword.length === 0}}">
+      <text class="big-icon">🔎</text>
+      <text>输入关键词开始搜索</text>
+    </view>
+
+  </view>
+</view>

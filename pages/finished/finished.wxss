@@ -1,0 +1,70 @@
+page {
+  box-sizing: border-box;
+  background-color: #f8f8f8;
+}
+
+view, text {
+  box-sizing: border-box;
+}
+
+.container {
+  padding: 30rpx; /* 恢复左右边距 */
+  width: 100%;
+}
+
+.header {
+  margin-bottom: 40rpx;
+  width: 100%;
+  text-align: center;
+}
+.header-title { font-size: 48rpx; font-weight: bold; color: #333; display: block; }
+.header-subtitle { font-size: 28rpx; color: #999; margin-top: 10rpx; display: block; }
+
+/* 卡片样式 */
+.song-card {
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 24rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.card-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1; 
+  margin-right: 20rpx;
+  min-width: 0; 
+}
+
+.song-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.song-artist { font-size: 26rpx; color: #666; margin-bottom: 8rpx; }
+.song-meta { font-size: 24rpx; color: #999; }
+
+.card-tag {
+  flex-shrink: 0; 
+  font-size: 24rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 8rpx;
+  font-weight: bold;
+}
+.card-tag.blank { background-color: #e3f2fd; color: #1976d2; }
+.card-tag.paper { background-color: #f3e5f5; color: #ab47bc; }
+/* ✨ 新增：图片标签样式 (橙色) */
+.card-tag.image { background-color: #fff7e6; color: #fa8c16; }
+
+.empty-state { margin-top: 200rpx; text-align: center; color: #ccc; font-size: 30rpx; }

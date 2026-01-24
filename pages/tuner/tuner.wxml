@@ -1,0 +1,94 @@
+<view class="container">
+  
+  <!-- 1. 顶部：调弦模式选择器 (Standard, Drop D, Open G...) -->
+  <picker 
+    mode="selector" 
+    range="{{presets}}" 
+    range-key="name" 
+    value="{{presetIndex}}" 
+    bindchange="onPresetChange"
+  >
+    <view class="header-group">
+      <view class="title-row">
+        <!-- 显示当前模式的名字 -->
+        <text class="title">{{presets[presetIndex].name}}</text>
+        <text class="switch-icon">▼</text>
+      </view>
+      <text class="subtitle">点击切换调弦模式</text>
+    </view>
+  </picker>
+
+  <!-- 2. 中部：全局升降调控制 (Standard, Eb, D...) -->
+  <view class="control-panel">
+    <view class="control-row">
+      <text class="control-label">整体降调</text>
+      <!-- 显示当前偏移量：0是标准，-1是降半音... -->
+      <text class="control-value">
+        {{globalOffset === 0 ? '标准音高' : (globalOffset + ' Semitones')}}
+      </text>
+    </view>
+    
+    <!-- 滑块范围：0 到 -6 (最多降 3 个全音) -->
+    <slider 
+      min="-6" 
+      max="0" 
+      step="1" 
+      value="{{globalOffset}}" 
+      activeColor="#fa7298" 
+      block-size="20"
+      bindchanging="onGlobalChange" 
+    />
+  </view>
+
+  <!-- 3. 核心：吉他交互区域 -->
+  <view class="guitar-head-area">
+    
+    <!-- 3.1 琴头木质背景 -->
+    <view class="headstock-body">
+      <text class="brand">Lyra</text>
+    </view>
+
+    <!-- 3.2 六根琴弦视觉 -->
+    <view class="strings-container">
+      <view class="string s6"></view>
+      <view class="string s5"></view>
+      <view class="string s4"></view>
+      <view class="string s3"></view>
+      <view class="string s2"></view>
+      <view class="string s1"></view>
+    </view>
+
+    <!-- 3.3 左侧琴钮 (6, 5, 4 弦) -->
+    <view class="pegs-left">
+      <!-- 遍历索引 0, 1, 2 -->
+      <block wx:for="{{[0, 1, 2]}}" wx:key="*this">
+        <view class="peg-wrapper" bindtap="playString" data-index="{{item}}">
+          <!-- 旋钮本体：如果正在播放(isPlaying为true)，加上 active 类变色 -->
+          <view class="peg-knob {{displayStrings[item].isPlaying ? 'active' : ''}}">
+            <!-- 显示计算后的音名 (如 E, D, Eb) -->
+            <text class="note">{{displayStrings[item].note}}</text>
+          </view>
+          <!-- 弦号标记 -->
+          <text class="label">{{6 - item}}</text>
+        </view>
+      </block>
+    </view>
+
+    <!-- 3.4 右侧琴钮 (3, 2, 1 弦) -->
+    <view class="pegs-right">
+      <!-- 遍历索引 3, 4, 5 -->
+      <block wx:for="{{[3, 4, 5]}}" wx:key="*this">
+        <view class="peg-wrapper" bindtap="playString" data-index="{{item}}">
+          <text class="label">{{6 - item}}</text>
+          <view class="peg-knob {{displayStrings[item].isPlaying ? 'active' : ''}}">
+            <text class="note">{{displayStrings[item].note}}</text>
+          </view>
+        </view>
+      </block>
+    </view>
+
+  </view>
+
+  <view class="tips">Lyra Tuner · Professional Mode</view>
+
+</view>

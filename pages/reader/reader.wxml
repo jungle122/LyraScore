@@ -1,0 +1,133 @@
+<view class="container">
+  
+  <!-- 顶部导航 -->
+  <view class="nav-bar">
+    <!-- 点击这里，打开抽屉 -->
+    <view class="menu-btn" bindtap="openDrawer">
+      <text style="font-weight:bold; font-size: 40rpx;">···</text>
+    </view>
+  </view>
+
+  <!-- 标题区 -->
+  <view class="header-area">
+    <text class="title">{{song.title}}</text>
+    <text class="artist" wx:if="{{song.artist}}">{{song.artist}}</text>
+  </view>
+
+  <!-- 参数区 -->
+  <view class="meta-section" wx:if="{{song.type === 'blank'}}">
+    <view class="meta-row">
+      <view class="meta-item"><text class="label">选调</text><text class="value">{{song.key}}</text></view>
+      <view class="meta-item"><text class="label">原调</text><text class="value">{{song.originalKey}}</text></view>
+      <view class="meta-item"><text class="label">Capo</text><text class="value">{{song.capo}}</text></view>
+    </view>
+    <view class="meta-row">
+      <view class="meta-item"><text class="label">拍号</text><text class="value">{{song.timeSignature}}</text></view>
+      <view class="meta-item"><text class="label">BPM</text><text class="value">{{song.bpm}}</text></view>
+      <view class="meta-item"><text class="label">调弦</text><text class="value">{{song.tuning}}</text></view>
+    </view>
+  </view>
+
+  <view class="paper-info" wx:if="{{song.type === 'paper'}}">
+    <text>📍 曲谱位于：{{song.location}}</text>
+  </view>
+<!-- ✨ 图片谱展示 (遍历显示，点击全屏) -->
+<view class="image-content" wx:if="{{song.type === 'image'}}">
+    <block wx:for="{{song.imagePaths}}" wx:key="*this">
+      <image 
+        src="{{item}}" 
+        mode="widthFix" 
+        style="width: 100%; display: block; margin-bottom: 20rpx;"
+        bindtap="previewImage"
+        data-current="{{item}}"
+      />
+    </block>
+  </view>
+  <!-- 歌词区 -->
+  <!-- ✨ 核心：style="font-size: {{fontSize}}rpx" -->
+  <!-- 这样我们拖动滑块，字就会变大变小 -->
+  <text 
+    class="content-area" 
+    user-select="true" 
+    style="font-size: {{fontSize}}rpx"
+  >{{song.content}}</text>
+
+</view>
+
+<!-- ========================= -->
+<!-- ✨ 自定义抽屉菜单 (完整版) -->
+<!-- ========================= -->
+
+<view class="drawer-mask" wx:if="{{showDrawer}}" bindtap="closeDrawer"></view>
+
+<view class="drawer-panel" wx:if="{{showDrawer}}">
+  <text class="drawer-title">更多操作</text>
+
+  <view class="menu-group">
+    <!-- ✨ 核心修改：条件判断 -->
+    <!-- 如果状态是 'finished' -->
+    <block wx:if="{{song.status === 'finished'}}">
+      <view class="menu-item" bindtap="markAsPracticing" style="color: #1976d2;">
+        🔄 重新练习
+      </view>
+    </block>
+    <!-- 否则 (也就是 'practicing') -->
+    <block wx:else>
+      <view class="menu-item" bindtap="markAsFinished" style="color: #52c41a;">
+        🎉 标记为已学会
+      </view>
+    </block>
+    
+    <view class="menu-item" bindtap="goToEdit">✏️ 编辑曲谱</view>
+  </view>
+
+  <view class="divider"></view>
+
+  <!-- 2. 字体缩放区 -->
+  <view class="control-group">
+    <view class="control-header">
+      <text class="control-label">字体大小</text>
+      <text class="control-value">{{fontSize}}</text>
+    </view>
+    <slider 
+      min="24" max="60" value="{{fontSize}}" 
+      activeColor="#333" block-size="18"
+      bindchanging="onZoomChange" 
+    />
+  </view>
+
+<!-- 3. 触感节拍器区 -->
+<view class="control-group">
+      <view class="control-header">
+        <text class="control-label">节拍器 (声音)</text>
+        <switch checked="{{isPlaying}}" bindchange="toggleMetronome" color="#333"/>
+      </view>
+      
+      <view wx:if="{{isPlaying}}" style="margin-top: 20rpx;">
+        <view class="control-header">
+          <text class="control-sub-label">速度 (BPM)</text>
+
+          <!-- ✨ 核心修改：把文本换成输入框 -->
+          <!-- type="number"：让手机弹出数字键盘 -->
+          <!-- value="{{currentBpm}}"：和滑块共享同一个数据源 -->
+          <!-- bindinput="onBpmInput"：每次打字时，都去执行 JS 里的 onBpmInput 函数 -->
+          <input 
+            class="bpm-input" 
+            type="number" 
+            value="{{currentBpm}}" 
+            bindinput="onBpmInput" 
+          />
+        </view>
+        <slider 
+          min="40" max="200" value="{{currentBpm}}" 
+          activeColor="#fa7298" block-size="18"
+          bindchanging="changeBpm" 
+        />
+      </view>
+    </view>
+
+  <view class="divider"></view>
+
+  <!-- 4. 底部删除 -->
+  <view class="menu-item delete" bindtap="deleteSong">🗑️ 删除曲谱</view>
+</view>

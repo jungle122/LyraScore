@@ -1,0 +1,32 @@
+<view class="container">
+  
+  <view class="header">
+    <text class="header-title">正在练</text>
+    <text class="header-subtitle">Keep Practicing!</text>
+  </view>
+
+  <view class="song-list">
+    <block wx:for="{{songList}}" wx:key="id">
+      
+      <!-- 回归最简单的卡片，点击直接跳转 -->
+      <view class="song-card" bindtap="goToDetail" data-id="{{item.id}}">
+        <view class="card-info">
+          <text class="song-title">{{item.title}}</text>
+          <text class="song-artist" wx:if="{{item.artist}}">{{item.artist}}</text>
+          <text class="song-meta" wx:if="{{item.type === 'paper'}}">📍 {{item.location}}</text>
+          <text class="song-meta" wx:if="{{item.type === 'blank'}}">🎼 {{item.key}}调 | {{item.bpm}} BPM</text>
+        </view>
+        <view class="card-tag {{item.type}}">
+          {{item.type === 'blank' ? '自制' : (item.type === 'paper' ? '归档' : '图片')}}
+        </view>
+      </view>
+
+    </block>
+  </view>
+
+  <view class="empty-state" wx:if="{{songList.length === 0}}">
+    <text>还没有正在练习的曲谱</text>
+    <text>点击底部 + 号添加吧</text>
+  </view>
+
+</view>

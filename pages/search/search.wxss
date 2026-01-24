@@ -1,0 +1,99 @@
+page {
+  background-color: #f8f8f8;
+  box-sizing: border-box;
+}
+view, text, input { box-sizing: border-box; }
+
+.container {
+  padding: 30rpx;
+  width: 100%;
+}
+
+/* 搜索框 */
+.search-bar {
+  margin-bottom: 40rpx;
+}
+
+.search-input-box {
+  background-color: #fff;
+  height: 80rpx;
+  border-radius: 40rpx; /* 圆角胶囊形状 */
+  display: flex;
+  align-items: center;
+  padding: 0 30rpx;
+  box-shadow: 0 4rpx 10rpx rgba(0,0,0,0.05);
+}
+
+.search-icon {
+  margin-right: 20rpx;
+  font-size: 32rpx;
+}
+
+.search-input {
+  flex: 1;
+  font-size: 30rpx;
+  color: #333;
+}
+
+.clear-btn {
+  width: 40rpx;
+  height: 40rpx;
+  background-color: #ccc;
+  color: #fff;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 40rpx;
+  font-size: 24rpx;
+}
+
+/* 结果列表 */
+.section-header {
+  font-size: 28rpx;
+  color: #999;
+  margin-bottom: 20rpx;
+  padding-left: 10rpx;
+}
+
+/* 复用卡片样式 (简化版) */
+.song-card {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx 30rpx;
+  margin-bottom: 20rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1; 
+  margin-right: 20rpx;
+}
+
+.song-title { font-size: 32rpx; font-weight: bold; color: #333; margin-bottom: 4rpx; }
+.song-artist { font-size: 24rpx; color: #666; margin-bottom: 4rpx; }
+.song-meta { font-size: 22rpx; color: #999; }
+
+.card-tag {
+  font-size: 22rpx; padding: 4rpx 12rpx; border-radius: 8rpx;
+}
+.card-tag.blank { background-color: #e3f2fd; color: #1976d2; }
+.card-tag.paper { background-color: #f3e5f5; color: #ab47bc; }
+.card-tag.image { background-color: #fff7e6; color: #fa8c16; }
+
+/* 空状态 */
+.empty-result, .empty-start {
+  margin-top: 100rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #ccc;
+  font-size: 28rpx;
+}
+
+.empty-result text:first-child, .empty-start .big-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+}

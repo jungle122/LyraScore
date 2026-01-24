@@ -1,0 +1,50 @@
+<view class="container">
+  
+  <!-- 1. 顶部 BPM 控制区 -->
+  <view class="bpm-control">
+    <view class="bpm-btn" bindtap="decreaseBpm">-</view>
+    
+    <view class="bpm-display">
+      <!-- ✨ 核心修改：把 text 换成 input -->
+      <!-- type="number": 数字键盘 -->
+      <!-- bindinput: 实时响应输入 -->
+      <!-- bindblur: 失去焦点(收起键盘)时触发，用于自动修正超范围的数值 -->
+      <input 
+        class="bpm-input" 
+        type="number" 
+        value="{{bpm}}" 
+        bindinput="onBpmInput"
+        bindblur="onBpmBlur"
+      />
+      <text class="bpm-label">BPM</text>
+    </view>
+
+    <view class="bpm-btn" bindtap="increaseBpm">+</view>
+  </view>
+
+  <!-- 2. 中间巨大的播放按钮 (C型圆环) -->
+  <view class="play-area" bindtap="togglePlay">
+    <!-- 外圈圆环，播放时会呼吸 -->
+    <view class="circle-ring {{isPlaying ? 'breathing' : ''}}">
+      <!-- 中间三角形图标 -->
+      <view class="play-icon {{isPlaying ? 'pause' : 'play'}}"></view>
+    </view>
+  </view>
+
+  <!-- 3. 拍子指示灯 (小圆点) -->
+  <view class="beat-dots">
+    <!-- 动态生成圆点：根据当前拍号的数量 -->
+    <block wx:for="{{timeSignatures[tsIndex].beats}}" wx:key="*this">
+      <!-- 逻辑：如果当前拍数(currentBeat) 等于 index+1，这个灯就亮 -->
+      <!-- index是从0开始，currentBeat是从1开始，所以是 index+1 -->
+      <view class="dot {{currentBeat === (index + 1) ? 'active' : ''}}"></view>
+    </block>
+  </view>
+
+  <!-- 4. 底部拍号选择 -->
+  <view class="ts-selector" bindtap="switchTimeSignature">
+    <text class="ts-value">{{timeSignatures[tsIndex].name}}</text>
+    <text class="ts-label">拍号 (点击切换)</text>
+  </view>
+
+</view>

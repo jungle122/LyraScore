@@ -1,0 +1,222 @@
+/* ✨ 魔法指令：让所有元素都乖乖听话，不要乱算宽度 */
+page {
+  box-sizing: border-box;
+}
+
+view, input, textarea {
+  box-sizing: border-box;
+}
+
+/* 全局容器 */
+.container {
+  padding: 40rpx; 
+  width: 100%; 
+  background-color: #ffffff;
+  
+  /* ✨ 新增：底部加厚！留出 180rpx 的空间给那个悬浮按钮 */
+  /* 这样歌词写再长，也能滑上来看到最后一行 */
+  padding-bottom: 180rpx; 
+}
+
+/* 2. 标题输入框 */
+.title-input {
+  width: 100%; /* 强制占满容器宽度 */
+  font-size: 56rpx;
+  font-weight: bold;
+  height: 100rpx;
+  line-height: 100rpx;
+  border-bottom: 2px solid #eeeeee; 
+  margin-bottom: 10rpx;
+  color: #333333;
+}
+.placeholder-style { color: #dddddd; }
+
+.artist-input {
+  width: 100%;
+  font-size: 36rpx;       /* 比歌名(56rpx)小很多，显出层级 */
+  color: #666666;         /* 用深灰色，不是纯黑 */
+  height: 80rpx;
+  line-height: 80rpx;
+  border-bottom: 1px solid #eeeeee; /* 细一点的底线 */
+  margin-bottom: 20rpx;   /* ✨ 这里恢复和大部队的距离 */
+}
+/* 3. 内容包裹区域 (这是之前漏掉的关键！) */
+.form-area {
+  width: 100%; /* ✨ 核心修复：强制下面的区域和标题一样宽 */
+}
+
+/* 4. 三个方块的行 */
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  /* ✨ 修改：行与行之间的距离从 50 改为 30，不然两行隔太远了 */
+  margin-bottom: 30rpx; 
+}
+
+.meta-item {
+  /* ✨ 核心修改：改回 30%，宽敞！ */
+  width: 30%; 
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  background-color: #f7f7f7;
+  border-radius: 16rpx;
+  padding: 16rpx 0;
+}
+
+.meta-item text {
+  /* ✨ 字体改大：恢复到 26rpx 甚至 28rpx，清晰可见 */
+  font-size: 26rpx; 
+  color: #666666;
+  margin-right: 8rpx;
+  white-space: nowrap;
+}
+
+.small-input {
+  /* ✨ 输入框也改回稍微宽一点 */
+  width: 60rpx; 
+  text-align: center;
+  font-weight: bold;
+  font-size: 32rpx;
+  color: #333;
+  border-bottom: none; 
+}
+
+/* 5. 歌词输入框 */
+.lyrics-editor {
+  width: 100%; /* ✨ 强制占满宽度 */
+  min-height: 600rpx;
+  font-size: 34rpx;
+  line-height: 1.8;
+  color: #333;
+  font-family: monospace; 
+  /* 这是一个小技巧：给输入框一点点内边距，让光标不要贴着最左边，更好看 */
+  padding: 0 10rpx; 
+}
+
+/* 纸质谱区域 */
+.paper-row {
+  margin-top: 40rpx;
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+}
+.label-text {
+  font-size: 36rpx;
+  color: #666666;
+  white-space: nowrap;
+  margin-right: 20rpx;
+  padding-bottom: 10rpx;
+}
+.location-input {
+  font-size: 40rpx;
+  border-bottom: 2px solid #333; 
+  padding: 10rpx 0;
+  flex: 1; 
+  color: #333;
+  text-align: left;
+}
+
+/* 保存按钮样式 (底部悬浮版) */
+.save-btn {
+  /* 1. 把按钮从文档流里拿出来，贴在屏幕玻璃上 */
+  position: fixed; 
+  bottom: 60rpx;   /* 离屏幕底部 60rpx */
+  left: 40rpx;     /* 离左边 40rpx (和页面边距对齐) */
+  right: 40rpx;    /* 离右边 40rpx */
+  
+  /* 2. 这里的 width 不需要写 100%，因为 left 和 right 已经把它撑开了 */
+  
+  background-color: #333333; 
+  color: #ffffff;          
+  font-size: 36rpx;
+  border-radius: 50rpx;    
+  font-weight: bold;
+  box-shadow: 0 4rpx 10rpx rgba(0, 0, 0, 0.2);
+  
+  /* 3. 确保按钮在最上层，不会被文字盖住 */
+  z-index: 100;    
+}
+
+.save-btn:active {
+  background-color: #555555;
+}
+/* --- 图片上传区样式 --- */
+.image-uploader {
+  width: 100%;
+  min-height: 400rpx;
+  background-color: #f7f7f7;
+  border-radius: 20rpx;
+  border: 2rpx dashed #cccccc; /* 虚线边框，表示可点击 */
+  overflow: hidden; /* 防止图片圆角溢出 */
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #999;
+}
+
+.preview-image {
+  width: 100%;
+  /* 高度不设，由 mode="widthFix" 自动决定 */
+  display: block;
+}
+
+.hint-text {
+  font-size: 24rpx;
+  color: #ccc;
+  text-align: center;
+  display: block;
+  margin-top: 20rpx;
+}
+/* --- 九宫格样式 --- */
+.image-grid {
+  display: flex;
+  flex-wrap: wrap; /* 自动换行 */
+  margin-top: 20rpx;
+}
+
+.grid-item {
+  width: 200rpx; /* 差不多一行3个 */
+  height: 200rpx;
+  margin-right: 20rpx;
+  margin-bottom: 20rpx;
+  position: relative;
+  border-radius: 10rpx;
+  overflow: hidden;
+}
+
+.thumb-img {
+  width: 100%;
+  height: 100%;
+}
+
+.add-btn {
+  background-color: #f0f0f0;
+  border: 2rpx dashed #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-tag {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: rgba(0,0,0,0.5);
+  color: white;
+  width: 40rpx;
+  height: 40rpx;
+  text-align: center;
+  line-height: 40rpx;
+  font-size: 24rpx;
+}

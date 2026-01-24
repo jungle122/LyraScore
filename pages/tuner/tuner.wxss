@@ -1,0 +1,185 @@
+page {
+  background-color: #f8f8f8;
+  box-sizing: border-box;
+}
+
+.container {
+  padding: 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20rpx;
+  /* 加个边框让它看起来像按钮 */
+  background-color: #fff;
+  padding: 20rpx 40rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 10rpx rgba(0,0,0,0.05);
+}
+.control-panel {
+  width: 90%;
+  background-color: #fff;
+  padding: 20rpx 30rpx;
+  border-radius: 20rpx;
+  margin-bottom: 40rpx;
+  box-shadow: 0 4rpx 10rpx rgba(0,0,0,0.05);
+}
+
+.control-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10rpx;
+}
+
+.control-label {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.control-value {
+  font-size: 28rpx;
+  color: #fa7298;
+  font-family: monospace;
+}
+
+.title-row {
+  display: flex;
+  align-items: center;
+}
+
+.switch-icon {
+  font-size: 24rpx;
+  color: #fa7298;
+  margin-left: 10rpx;
+  margin-top: 6rpx;
+}
+
+/* ... title 和 subtitle 样式微调 ... */
+.title { font-size: 40rpx; font-weight: bold; color: #333; }
+.subtitle { font-size: 24rpx; color: #999; margin-bottom: 0; margin-top: 6rpx; }
+
+/* --- 吉他绘制核心区 --- */
+.guitar-head-area {
+  position: relative;
+  width: 500rpx;
+  height: 800rpx;
+  /* background: rgba(0,0,0,0.05); 用于调试的背景色 */
+  display: flex;
+  justify-content: center;
+}
+
+/* 1. 琴头本体 (画一个带圆角的梯形) */
+.headstock-body {
+  width: 180rpx;
+  height: 100%;
+  background-color: #5d4037; /* 深木色 */
+  border-radius: 20rpx 20rpx 0 0;
+  box-shadow: 0 10rpx 20rpx rgba(0,0,0,0.3);
+  position: relative;
+  z-index: 1; /* 在最底层 */
+  
+  display: flex;
+  justify-content: center;
+  padding-top: 40rpx;
+}
+
+.brand {
+  color: rgba(255,255,255,0.3);
+  font-family: 'Times New Roman', serif;
+  font-size: 40rpx;
+  font-weight: bold;
+}
+
+/* 2. 琴弦 (6条竖线) */
+.strings-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2; /* 在琴头上面 */
+  pointer-events: none; /* 让点击穿透过去 */
+  
+  display: flex;
+  justify-content: center;
+}
+
+.string {
+  width: 2rpx; /* 弦的粗细 */
+  height: 100%;
+  background-color: #d7ccc8; /* 银色 */
+  margin: 0 6rpx; /* 弦之间的距离 */
+  opacity: 0.8;
+}
+/* 粗弦稍微粗一点 */
+.s6 { width: 4rpx; background-color: #a1887f; margin-left: -20rpx; } 
+.s5 { width: 3.5rpx; background-color: #a1887f; }
+.s1 { margin-right: -20rpx; }
+
+
+/* 3. 琴钮 (左右两边) */
+.pegs-left, .pegs-right {
+  position: absolute;
+  top: 100rpx;
+  height: 600rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 3;
+}
+
+.pegs-left { left: 0; align-items: flex-end; padding-right: 20rpx; }
+.pegs-right { right: 0; align-items: flex-start; padding-left: 20rpx; }
+
+.peg-wrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 60rpx;
+}
+
+.label {
+  font-size: 24rpx;
+  color: #999;
+  margin: 0 16rpx;
+}
+
+/* 琴钮旋钮本体 (圆形) */
+.peg-knob {
+  width: 90rpx;
+  height: 90rpx;
+  background-color: #e0e0e0; /* 银色金属 */
+  border: 4rpx solid #bdbdbd;
+  border-radius: 50%;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333;
+  
+  box-shadow: 0 4rpx 8rpx rgba(0,0,0,0.2);
+  transition: all 0.2s; /* 动画过渡 */
+}
+
+/* 选中激活状态 (变粉色) */
+.peg-knob.active {
+  background-color: #fa7298;
+  color: white;
+  border-color: #fa7298;
+  transform: scale(1.1); /* 稍微放大 */
+  box-shadow: 0 0 20rpx rgba(250, 114, 152, 0.6);
+}
+
+.tips {
+  margin-top: 60rpx;
+  font-size: 26rpx;
+  color: #999;
+}

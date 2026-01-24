@@ -1,0 +1,165 @@
+page {
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* 占满全屏高度 */
+}
+
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around; /* 垂直均匀分布 */
+  padding: 60rpx;
+}
+
+/* 1. BPM 控制 */
+.bpm-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 40rpx;
+}
+
+.bpm-display {
+  text-align: center;
+  /* 稍微给点宽度，防止输入框太窄点不到 */
+  min-width: 200rpx; 
+}
+
+/* ✨ 新增：巨大的输入框样式 */
+.bpm-input {
+  font-size: 90rpx; /* 保持原来的超大字号 */
+  font-weight: bold;
+  color: #333;
+  height: 100rpx;   /* 高度要够，防止大字被切掉 */
+  line-height: 100rpx;
+  min-height: 100rpx;
+  text-align: center; /* 文字居中 */
+  
+  /* 去掉默认样式，让它融入背景 */
+  background: transparent;
+  border: none;
+  font-family: monospace; /* 等宽字体，防止数字跳动 */
+}
+
+.bpm-value {
+  font-size: 90rpx; /* 超大数字 */
+  font-weight: bold;
+  color: #333;
+  display: block;
+  line-height: 1;
+}
+
+.bpm-label {
+  font-size: 28rpx;
+  color: #999;
+  letter-spacing: 4rpx;
+}
+
+.bpm-btn {
+  width: 80rpx;
+  height: 80rpx;
+  /* 这句代码告诉布局引擎：无论中间的字多大，这两个按钮的宽度绝对不能缩水 */
+  flex-shrink: 0; 
+  border-radius: 50%;/* 变成正圆 */
+  border: 2rpx solid #e0e0e0;
+  /* 居中对齐 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 50rpx;
+  color: #333;
+  background-color: #f9f9f9;
+
+  /* 稍微加个边距，防止贴太紧 */
+  margin: 0 20rpx;
+}
+.bpm-btn:active { background-color: #eee; }
+
+/* 2. 播放大圆环 */
+.play-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.circle-ring {
+  width: 400rpx;
+  height: 400rpx;
+  border-radius: 50%;
+  border: 10rpx solid #333; /* 粗黑框 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.3s;
+}
+
+/* 播放时的呼吸动画 */
+.circle-ring.breathing {
+  border-color: #fa7298; /* 变粉 */
+  box-shadow: 0 0 40rpx rgba(250, 114, 152, 0.4);
+  transform: scale(1.05);
+}
+
+/* 播放图标 (用CSS画三角形) */
+.play-icon.play {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 40rpx 0 40rpx 70rpx;
+  border-color: transparent transparent transparent #333;
+  margin-left: 10rpx; /* 视觉修正 */
+}
+
+/* 暂停图标 (两条竖线) */
+.play-icon.pause {
+  width: 50rpx;
+  height: 80rpx;
+  border-left: 16rpx solid #fa7298;
+  border-right: 16rpx solid #fa7298;
+}
+
+/* 3. 指示灯 */
+.beat-dots {
+  display: flex;
+  gap: 30rpx;
+  height: 40rpx;
+}
+
+.dot {
+  width: 30rpx;
+  height: 30rpx;
+  border-radius: 50%;
+  background-color: #e0e0e0; /* 默认灰 */
+  transition: all 0.1s;
+}
+
+.dot.active {
+  background-color: #fa7298; /* 激活粉 */
+  transform: scale(1.4);
+}
+
+/* 4. 底部拍号 */
+.ts-selector {
+  text-align: center;
+  padding: 20rpx 40rpx;
+  background-color: #f8f8f8;
+  border-radius: 40rpx;
+}
+
+.ts-value {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+}
+
+.ts-label {
+  font-size: 24rpx;
+  color: #999;
+}

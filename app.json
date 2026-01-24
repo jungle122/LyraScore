@@ -1,0 +1,61 @@
+{
+  "pages": [
+    "pages/practicing/practicing",
+    "pages/finished/finished",
+    "pages/search/search",
+    "pages/profile/profile",
+    "pages/editor/editor",
+    "pages/add/add",
+    "pages/reader/reader",
+    "pages/trash/trash",
+    "pages/tuner/tuner",
+    "pages/metronome/metronome"
+  ],
+  "window": {
+    "pageOrientation": "auto", 
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTitleText": "Lyra吉他谱本",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#FA7298",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/practicing/practicing",
+        "text": "正在练",
+        "iconPath": "images/tab_practice.png",
+        "selectedIconPath": "images/tab_practice_active.png"
+      },
+      {
+        "pagePath": "pages/finished/finished",
+        "text": "已练完",
+        "iconPath": "images/tab_finished.png",
+        "selectedIconPath": "images/tab_finished_active.png"
+      },
+      {
+        "pagePath": "pages/add/add",
+        "text": "添加",
+        "iconPath": "images/tab_add.png",
+        "selectedIconPath": "images/tab_add_active.png"
+      },
+      {
+        "pagePath": "pages/search/search",
+        "text": "搜索",
+        "iconPath": "images/tab_search.png",
+        "selectedIconPath": "images/tab_search_active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我",
+        "iconPath": "images/tab_me.png",
+        "selectedIconPath": "images/tab_me_active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

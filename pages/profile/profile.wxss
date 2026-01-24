@@ -1,0 +1,114 @@
+page {
+  background-color: #f8f8f8;
+  box-sizing: border-box;
+}
+
+.container {
+  padding: 30rpx;
+}
+
+.page-title {
+  font-size: 56rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 40rpx;
+  padding-left: 10rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  color: #fa7298; /* 用你的主题色 */
+  font-weight: bold;
+  margin-bottom: 20rpx;
+  margin-top: 40rpx;
+  padding-left: 10rpx;
+}
+
+/* 2. 统计卡片 */
+.stats-card {
+  background-color: #fff;
+  border-radius: 20rpx;
+  padding: 40rpx 0;
+  display: flex;
+  justify-content: space-around; /* 平均分布 */
+  align-items: center;
+  margin-bottom: 40rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.03);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 40%;
+}
+
+.stat-num {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.stat-label {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.line {
+  width: 2rpx;
+  height: 60rpx;
+  background-color: #eee;
+}
+
+/* 3. 菜单列表 */
+.menu-list {
+  background-color: #fff;
+  border-radius: 20rpx;
+  padding: 0 30rpx; /* 上下0，左右30 */
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.03);
+}
+
+.menu-item {
+  height: 110rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2rpx solid #f5f5f5;
+}
+
+/* 最后一个菜单项不要底边线 */
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-left {
+  display: flex;
+  align-items: center;
+  font-size: 32rpx;
+  color: #333;
+}
+
+.menu-icon {
+  margin-right: 20rpx;
+  font-size: 36rpx;
+}
+
+.menu-right {
+  display: flex;
+  align-items: center;
+}
+
+.badge {
+  background-color: #ff4d4f;
+  color: white;
+  font-size: 24rpx;
+  padding: 4rpx 14rpx;
+  border-radius: 20rpx;
+  margin-right: 16rpx;
+}
+
+.arrow {
+  color: #ccc;
+  font-size: 32rpx;
+}

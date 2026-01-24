@@ -1,0 +1,81 @@
+page {
+  background-color: #f0f0f0; /* 深一点的灰背景 */
+  box-sizing: border-box;
+}
+view, text { box-sizing: border-box; }
+
+.container {
+  padding: 30rpx;
+  width: 100%;
+}
+
+.header {
+  margin-bottom: 40rpx;
+  padding-left: 10rpx;
+}
+.title { font-size: 40rpx; font-weight: bold; color: #333; display: block; }
+.subtitle { font-size: 26rpx; color: #999; margin-top: 10rpx; }
+
+/* 卡片样式 */
+.trash-card {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* 灰度滤镜：让卡片看起来有点旧旧的，符合回收站的感觉 */
+  filter: grayscale(20%); 
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* 占满左边 */
+}
+
+.song-title {
+  font-size: 34rpx;
+  color: #666; /* 灰色字 */
+  font-weight: bold;
+  margin-bottom: 8rpx;
+}
+
+.expire-tip {
+  font-size: 24rpx;
+  color: #ff9c6e; /* 橙色警告 */
+}
+
+/* 按钮组 */
+.actions {
+  display: flex;
+  gap: 20rpx; /* 按钮之间的间距 */
+}
+
+.btn {
+  font-size: 26rpx;
+  padding: 10rpx 24rpx;
+  border-radius: 30rpx;
+  font-weight: bold;
+}
+
+.recover {
+  background-color: #e6f7ff;
+  color: #1890ff; /* 蓝色恢复 */
+  border: 1px solid #91d5ff;
+}
+
+.delete {
+  background-color: #fff1f0;
+  color: #ff4d4f; /* 红色销毁 */
+  border: 1px solid #ffa39e;
+}
+
+.empty {
+  margin-top: 200rpx;
+  text-align: center;
+  color: #999;
+  display: flex;
+  flex-direction: column;
+}
