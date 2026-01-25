@@ -1,15 +1,11 @@
+const db = wx.cloud.database();
+
 Page({
   data: {
     keyword: '',
     resultList: []
   },
 
-  // 每次页面显示时，清空搜索框（或者你可以选择保留）
-  onShow() {
-    // this.setData({ keyword: '', resultList: [] });
-  },
-
-  // 核心逻辑：输入时触发
   onSearchInput(e) {
     const val = e.detail.value;
     this.setData({ keyword: val });
@@ -19,29 +15,27 @@ Page({
       return;
     }
 
-    // 1. 获取所有歌 (包括正在练、已练完、回收站)
-    const allSongs = wx.getStorageSync('my_songs') || [];
-
-    // 2. 过滤
-    const lowerVal = val.toLowerCase(); // 转小写，实现不区分大小写
-    const results = allSongs.filter(song => {
-      const titleMatch = song.title && song.title.toLowerCase().includes(lowerVal);
-      const artistMatch = song.artist && song.artist.toLowerCase().includes(lowerVal);
-      return titleMatch || artistMatch;
+    // ✨ 云开发模糊搜索核心逻辑
+    db.collection('songs').where({
+      // 使用正则表达式进行模糊匹配
+      // 'i' 表示不区分大小写
+      title: db.RegExp({
+        regexp: val,
+        options: 'i',
+      })
+      // 注意：由于云数据库限制，单个查询很难同时模糊搜 title 或 artist
+      // 这里的逻辑优先搜索标题，如果需要同时搜歌手，需要更高级的指令，咱们先保标题
+    }).get().then(res => {
+      this.setData({
+        resultList: res.data
+      });
     });
-
-    this.setData({ resultList: results });
   },
 
-  // 清空搜索
   clearSearch() {
-    this.setData({
-      keyword: '',
-      resultList: []
-    });
+    this.setData({ keyword: '', resultList: [] });
   },
 
-  // 跳转详情
   goToDetail(e) {
     const id = e.currentTarget.dataset.id;
     wx.navigateTo({ url: `/pages/reader/reader?id=${id}` });

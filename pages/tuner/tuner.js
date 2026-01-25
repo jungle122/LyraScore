@@ -28,6 +28,13 @@ Page({
   },
 
   onLoad() {
+    // ✨ 强行开启“无视静音模式”
+    if (wx.setInnerAudioOption) {
+      wx.setInnerAudioOption({
+        obeyMuteSwitch: false, // 关键：不服从静音开关
+        mixWithOther: true,    // 允许和其他 App 的声音混音（比如你可以边听歌边调音）
+      });
+    }
     // 1. 创建 WebAudio 上下文
     this.data.audioCtx = wx.createWebAudioContext();
     this.calculateStrings();

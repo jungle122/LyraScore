@@ -37,7 +37,8 @@
       <image 
         src="{{item}}" 
         mode="widthFix" 
-        style="width: 100%; display: block; margin-bottom: 20rpx;"
+        lazy-load="true" 
+        style="width: 100%; display: block; margin-bottom: 20rpx; background-color: #f0f0f0; min-height: 400rpx;"
         bindtap="previewImage"
         data-current="{{item}}"
       />

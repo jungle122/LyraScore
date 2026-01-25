@@ -19,6 +19,13 @@ Page({
   },
 
   onLoad() {
+    // ✨ 强行开启“无视静音模式”
+    if (wx.setInnerAudioOption) {
+      wx.setInnerAudioOption({
+        obeyMuteSwitch: false,
+        mixWithOther: true,
+      });
+    }
     // 1. 创建引擎
     this.data.audioCtx = wx.createWebAudioContext();
     // 2. 预加载声音

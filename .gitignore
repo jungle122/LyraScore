@@ -11,3 +11,6 @@ project.private.config.json
 # 编译后的文件 (如果有)
 unpackage/
 dist/
+
+# 忽略云开发环境的本地临时配置
+.runtime/

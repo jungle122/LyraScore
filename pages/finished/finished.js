@@ -1,27 +1,38 @@
+// 1. 初始化云数据库
+const db = wx.cloud.database();
+
 Page({
   data: {
     songList: []
   },
 
-  // 同样用 onShow，保证每次切换到这个页面都能刷新
   onShow() {
-    this.loadSongs();
+    this.loadFinishedSongs();
   },
 
-  loadSongs() {
-    const allSongs = wx.getStorageSync('my_songs') || [];
-    
-    // ✨ 核心区别：只筛选出 status === 'finished' 的歌
-    const finishedSongs = allSongs.filter(s => s.status === 'finished');
-    
-    console.log("已练完列表读取到的歌单：", finishedSongs);
+  loadFinishedSongs() {
+    wx.showLoading({ title: '加载中...' });
 
-    this.setData({
-      songList: finishedSongs
-    });
+    // ✨ 核心修改：从云端获取状态为 'finished' 的歌
+    db.collection('songs')
+      .where({
+        status: 'finished'
+      })
+      .get()
+      .then(res => {
+        console.log('已练完列表获取成功:', res.data);
+        this.setData({
+          songList: res.data
+        });
+        wx.hideLoading();
+      })
+      .catch(err => {
+        console.error('云端获取失败:', err);
+        wx.hideLoading();
+      });
   },
 
-  // ✨ 代码复用：这个跳转逻辑和“正在练”页面一模一样
+  // 跳转到阅读页 (逻辑与“正在练”一致)
   goToDetail(e) {
     const id = e.currentTarget.dataset.id;
     wx.navigateTo({ url: `/pages/reader/reader?id=${id}` });
