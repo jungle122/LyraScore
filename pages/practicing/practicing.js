@@ -46,5 +46,12 @@ Page({
     // 如果是新录入的，我们以后尽量用 _id，但现在先不动这个逻辑
     const id = e.currentTarget.dataset.id;
     wx.navigateTo({ url: `/pages/reader/reader?id=${id}` });
-  }
+  },
+    // ✨ 跳转到搜索页
+    goToSearch() {
+      // 因为 search 已经不是 tabBar 页面了，所以用 navigateTo
+      wx.navigateTo({
+        url: '/pages/search/search'
+      });
+    }
 });

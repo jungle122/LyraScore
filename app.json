@@ -43,12 +43,6 @@
         "selectedIconPath": "images/tab_add_active.png"
       },
       {
-        "pagePath": "pages/search/search",
-        "text": "搜索",
-        "iconPath": "images/tab_search.png",
-        "selectedIconPath": "images/tab_search_active.png"
-      },
-      {
         "pagePath": "pages/profile/profile",
         "text": "我",
         "iconPath": "images/tab_me.png",

@@ -2,7 +2,12 @@
   
   <view class="header">
     <text class="header-title">正在练</text>
-    <text class="header-subtitle">Keep Practicing!</text>
+    <!-- ✨ 伪搜索框：其实是一个按钮 -->
+    <view class="search-entry" bindtap="goToSearch">
+      <view class="search-box">
+        <text class="search-text">搜索曲谱...</text>
+      </view>
+    </view>
   </view>
 
   <view class="song-list">

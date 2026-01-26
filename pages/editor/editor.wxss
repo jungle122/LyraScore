@@ -220,3 +220,19 @@ view, input, textarea {
   line-height: 40rpx;
   font-size: 24rpx;
 }
+
+/* ✨ 新增：备注区域样式 */
+.comment-section {
+  margin-top: 60rpx;
+  padding-top: 30rpx;
+  border-top: 1rpx solid #eee; /* 加一条细线区分开 */
+}
+
+.comment-input {
+  width: 100%;
+  min-height: 100rpx;
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.6;
+  padding: 20rpx 0;
+}

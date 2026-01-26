@@ -18,9 +18,9 @@
         <!-- 右侧按钮组 -->
         <view class="actions">
           <!-- 恢复按钮 -->
-          <view class="btn recover" bindtap="recoverSong" data-id="{{item.id}}">恢复</view>
+          <view class="btn recover" bindtap="recoverSong" data-id="{{item._id}}">恢复</view>
           <!-- 彻底删除按钮 -->
-          <view class="btn delete" bindtap="deleteForever" data-id="{{item.id}}">销毁</view>
+          <view class="btn delete" bindtap="deleteForever" data-id="{{item._id}}">销毁</view>
         </view>
 
       </view>
@@ -30,7 +30,6 @@
   <!-- 空状态 -->
   <view class="empty" wx:if="{{trashList.length === 0}}">
     <text>回收站是空的</text>
-    <text style="font-size: 24rpx; margin-top: 10rpx;">(没有任何后悔药)</text>
   </view>
 
 </view>

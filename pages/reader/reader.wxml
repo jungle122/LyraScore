@@ -51,8 +51,13 @@
     class="content-area" 
     user-select="true" 
     style="font-size: {{fontSize}}rpx"
+    wx:if="{{song.content}}" 
   >{{song.content}}</text>
-
+ <!-- ✨【重点】备注应该放在这里！在 container 的末尾，和歌词并列 -->
+ <view class="reader-comment" wx:if="{{song.comment}}">
+    <view class="comment-tag">MEMO</view>
+    <text class="comment-text">{{song.comment}}</text>
+  </view>
 </view>
 
 <!-- ========================= -->

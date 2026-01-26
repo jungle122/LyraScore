@@ -96,6 +96,16 @@
     
     <text class="hint-text">最多可选9张，点击 x 删除</text>
   </view>
+  <!-- ✨ 新增：备注区域 -->
+<view class="comment-section">
+    <text class="label-text">备注信息</text>
+    <textarea 
+      class="comment-input" 
+      placeholder="写点什么" 
+      model:value="{{comment}}"
+      auto-height
+    />
+  </view>
     <!-- 保存按钮 -->
   <!-- bindtap="save" 意思是：点击这个按钮，就去执行 JS 里的 save 函数 -->
   <button class="save-btn" bindtap="save">完成并保存</button>

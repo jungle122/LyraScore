@@ -8,6 +8,7 @@ Page({
     type: 'blank', 
     title: '',
     artist: '',
+    comment: '', // ✨ 新增备注变量
 
     // 自制谱数据
     key: 'C', originalKey: 'C', capo: 0, timeSignature: '4/4', bpm: 90, tuning: '标准',
@@ -56,7 +57,8 @@ Page({
           timeSignature: song.timeSignature, bpm: song.bpm, tuning: song.tuning,
           content: song.content,
           location: song.location,
-          imagePaths: paths
+          imagePaths: paths,
+          comment: song.comment || ''
         });
         wx.setNavigationBarTitle({ title: '编辑乐谱' });
       } else {
@@ -137,7 +139,8 @@ Page({
         bpm: this.data.bpm, tuning: this.data.tuning,
         content: this.data.content,
         location: this.data.location,
-        imagePaths: finalImagePaths // ✨ 存入云端文件 ID
+        imagePaths: finalImagePaths, // ✨ 存入云端文件 ID
+        comment: this.data.comment // ✨ 将备注存入云端
       };
 
       // 4. 写入数据库

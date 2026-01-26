@@ -209,3 +209,23 @@ view, text, scroll-view {
   /* 去掉小程序输入框默认的边框 */
   border: none; 
 }
+.reader-comment {
+  margin-top: 40rpx;
+  padding: 30rpx;
+  background-color: #fcfcfc; /* 极淡的背景色 */
+  border-left: 6rpx solid #FA7298; /* 左边加一根粉色色条，像引用块 */
+  border-radius: 8rpx;
+}
+
+.comment-tag {
+  font-size: 20rpx;
+  font-weight: bold;
+  color: #FA7298;
+  margin-bottom: 10rpx;
+}
+
+.comment-text {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.5;
+}
