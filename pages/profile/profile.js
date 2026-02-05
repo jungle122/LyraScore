@@ -97,7 +97,7 @@ Page({
   showAbout() {
     wx.showModal({
       title: '关于 Lyra吉他谱本',
-      content: '由 Lyra 开发的私人吉他谱管理工具。\n 图标素材由 iconfont 设计师【落叶寄相思】提供。\n 联系作者：congconglinr@foxmail.com \n Version 2.1.0',
+      content: '由 Lyra 开发的私人吉他谱管理工具。\n 图标素材由 iconfont 设计师【落叶寄相思】提供。\n备案号：赣ICP备2026002165号-1X\n 联系作者：congconglinr@foxmail.com \n Version 2.1.1',
       showCancel: false,
       confirmText: '我知道了',
       confirmColor: '#FA7298' // 使用你的主题粉色

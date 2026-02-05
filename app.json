@@ -12,7 +12,7 @@
     "pages/metronome/metronome"
   ],
   "window": {
-    "pageOrientation": "auto", 
+    "pageOrientation": "portrait", 
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#ffffff",
     "navigationBarTitleText": "Lyra吉他谱本",
