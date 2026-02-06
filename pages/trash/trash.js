@@ -51,5 +51,17 @@ Page({
         }
       }
     });
+  },
+  // 分享给朋友
+  onShareAppMessage() {
+    return app.globalShare();
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    // 朋友圈模版通常只需要一个标题
+    return {
+      title: 'Lyra吉他谱本 - 吉他手的私人云端琴房'
+    }
   }
 });

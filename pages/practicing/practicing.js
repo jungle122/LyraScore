@@ -53,5 +53,20 @@ Page({
       wx.navigateTo({
         url: '/pages/search/search'
       });
+    },
+    // ✨ 1. 开启“转发给好友”
+  onShareAppMessage() {
+    return {
+      title: '我正在用 Lyra吉他谱本 练琴，太好用了！🎸',
+      path: '/pages/practicing/practicing'
     }
+  },
+
+  // ✨ 2. 开启“分享到朋友圈”
+  onShareTimeline() {
+    return {
+      title: 'Lyra吉他谱本：吉他手的私人云端琴房☁️',
+      query: 'from=timeline'
+    }
+  }
 });

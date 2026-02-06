@@ -111,6 +111,7 @@ Page({
       wx.showToast({ title: '请填写歌名', icon: 'none' });
       return;
     }
+    // 只有在【纯图片谱模式】下才强制要求选图
     if (this.data.type === 'image' && this.data.imagePaths.length === 0) {
       wx.showToast({ title: '请至少选一张图', icon: 'none' });
       return;
@@ -195,5 +196,17 @@ Page({
 
     // 等待所有图片都处理完
     return Promise.all(uploadTasks);
+  },
+  // 分享给朋友
+  onShareAppMessage() {
+    return app.globalShare();
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    // 朋友圈模版通常只需要一个标题
+    return {
+      title: 'Lyra吉他谱本 - 吉他手的私人云端琴房'
+    }
   }
 });

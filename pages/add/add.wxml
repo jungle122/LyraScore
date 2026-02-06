@@ -1,48 +1,46 @@
 <view class="container">
   
+  <!-- ✨ 标题区：统一为 header 类，实现居中 -->
   <view class="header">
-    <text class="title">添加曲谱</text>
-    <text class="subtitle">选择一种方式记录你的曲谱</text>
+    <text class="header-title">添加曲谱</text>
   </view>
 
   <view class="menu-list">
-    
-    <!-- 选项 1 -->
+    <!-- 选项 1：新建自制谱 -->
     <view class="menu-card" bindtap="goToBlank">
-      <view class="icon-box" style="background-color: #e6f7ff;">
-        <text class="icon">📝</text>
+      <view class="icon-box" style="background-color: #e3f2fd;">
+        <!-- ✨ 替换 Emoji 为你的新图片 -->
+        <image src="/images/mark-pen-line.png" class="menu-icon-img" />
       </view>
       <view class="text-box">
         <text class="card-title">新建自制谱</text>
-        <text class="card-desc">手动输入歌词与和弦，支持移调</text>
+        <text class="card-desc">手动输入歌词与和弦</text>
       </view>
       <text class="arrow">></text>
     </view>
 
-    <!-- 选项 2 -->
+    <!-- 选项 2：相册导入 -->
     <view class="menu-card" bindtap="goToImage">
       <view class="icon-box" style="background-color: #fff7e6;">
-        <text class="icon">📷</text>
+        <image src="/images/camera-3-line.png" class="menu-icon-img" />
       </view>
       <view class="text-box">
         <text class="card-title">从相册导入</text>
-        <text class="card-desc">上传吉他谱截图或照片，支持多图</text>
+        <text class="card-desc">上传吉他谱截图或照片</text>
       </view>
       <text class="arrow">></text>
     </view>
 
-    <!-- 选项 3 -->
+    <!-- 选项 3：纸质谱 -->
     <view class="menu-card" bindtap="goToPaper">
       <view class="icon-box" style="background-color: #f9f0ff;">
-        <text class="icon">📚</text>
+        <image src="/images/book-open-line.png" class="menu-icon-img" />
       </view>
       <view class="text-box">
         <text class="card-title">纸质谱归档</text>
-        <text class="card-desc">记录书名与页码，建立实体书索引</text>
+        <text class="card-desc">记录书名页码，支持拍照备份</text>
       </view>
       <text class="arrow">></text>
     </view>
-
   </view>
-
 </view>

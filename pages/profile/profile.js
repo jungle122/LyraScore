@@ -35,7 +35,7 @@ Page({
           content: `今天就练这首吧：\n\n🎸 《${luckySong.title}》`,
           confirmText: '去练习',
           confirmColor: '#fa7298',
-          cancelText: '换一个', // 你甚至可以允许用户换一个
+          cancelText: '取消',
           success: (r) => {
             if (r.confirm) {
               // 4. 跳转到 Reader 页面 (记得带上 id)
@@ -43,8 +43,8 @@ Page({
                 url: `/pages/reader/reader?id=${luckySong.id}`
               });
             } else if (r.cancel) {
-              // 如果用户点了“换一个”，重新递归调用自己
-              this.randomPick();
+              // 用户点了"取消"，关闭弹窗即可
+              return;
             }
           }
         });
@@ -93,14 +93,26 @@ Page({
     wx.navigateTo({ url: '/pages/metronome/metronome' });
   },
 
-  // 关于作者
+  // 关于
   showAbout() {
     wx.showModal({
       title: '关于 Lyra吉他谱本',
-      content: '由 Lyra 开发的私人吉他谱管理工具。\n 图标素材由 iconfont 设计师【落叶寄相思】提供。\n备案号：赣ICP备2026002165号-1X\n 联系作者：congconglinr@foxmail.com \n Version 2.1.1',
+      content: '由 Lyra 开发的私人吉他谱管理工具。\n 图标素材由 iconfont 设计师【落叶寄相思】提供。\n备案号：赣ICP备2026002165号-1X\n 联系作者：congconglinr@foxmail.com \n Version 2.1.2',
       showCancel: false,
       confirmText: '我知道了',
       confirmColor: '#FA7298' // 使用你的主题粉色
     });
+  },
+  // 分享给朋友
+  onShareAppMessage() {
+    return app.globalShare();
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    // 朋友圈模版通常只需要一个标题
+    return {
+      title: 'Lyra吉他谱本 - 吉他手的私人云端琴房'
+    }
   }
 });

@@ -26,6 +26,8 @@ view, text {
   /*padding: 0 30rpx;*/
   padding: flex;
   margin-bottom: 30rpx;
+  /* ✨ 新增这一行：强制头部留出距离 */
+  margin-top: 30rpx;
 }
 
 .search-box {
@@ -44,7 +46,7 @@ view, text {
 
 .search-icon {
   font-size: 30rpx;
-  margin-right: 10rpx;
+  margin-right: 15rpx;
 }
 
 .search-text {

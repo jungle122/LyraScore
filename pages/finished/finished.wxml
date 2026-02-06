@@ -1,14 +1,13 @@
 <view class="container">
   
-  <!-- ✨ 标题修改 -->
   <view class="header">
     <text class="header-title">已练完</text>
-  </view>
-<!-- ✨ 伪搜索框：其实是一个按钮 -->
-  <view class="search-entry" bindtap="goToSearch">
-    <view class="search-box">
-      <text class="search-icon">🔍</text>
-      <text class="search-text">搜索曲谱...</text>
+    <!-- ✨ 伪搜索框：其实是一个按钮 -->
+    <view class="search-entry" bindtap="goToSearch">
+      <view class="search-box">
+        <text class="search-icon">🔍</text> 
+        <text class="search-text">搜索曲谱...</text>
+      </view>
     </view>
   </view>
   <!-- 列表结构完全复用 -->

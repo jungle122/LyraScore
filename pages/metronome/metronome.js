@@ -43,7 +43,7 @@ Page({
     const fs = wx.getFileSystemManager();
     // ⚠️ 请确认你的 tick.mp3 是在 images 还是 audio 文件夹
     // 之前我们放在 images 里，这里就写 /images/tick.mp3
-    const filePath = '/images/tick.mp3'; 
+    const filePath = '/audio/tick.mp3'; 
 
     fs.readFile({
       filePath: filePath,
@@ -167,6 +167,18 @@ Page({
     this.setData({ tsIndex: nextIndex });
     if (this.data.isPlaying) {
       this.start();
+    }
+  },
+  // 分享给朋友
+  onShareAppMessage() {
+    return app.globalShare();
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    // 朋友圈模版通常只需要一个标题
+    return {
+      title: 'Lyra吉他谱本 - 吉他手的私人云端琴房'
     }
   }
 });

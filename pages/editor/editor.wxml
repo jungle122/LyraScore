@@ -69,6 +69,17 @@
       <text class="label-text">曲谱位于：</text>
       <input class="location-input" placeholder="例如：《弹指之间》P68" model:value="{{location}}" />
     </view>
+    <!-- ✨ 新增：在纸质谱下面也加一个图片上传区 (可选) -->
+    <view class="section-title" style="margin-top:40rpx; font-size:28rpx; color:#999;">备份图片 (可选)</view>
+    <view class="image-grid">
+      <view class="grid-item" wx:for="{{imagePaths}}" wx:key="*this">
+        <image src="{{item}}" mode="aspectFill" class="thumb-img" bindtap="previewCurrent" data-url="{{item}}" />
+        <view class="delete-tag" catchtap="removeImage" data-index="{{index}}">x</view>
+      </view>
+      <view class="grid-item add-btn" bindtap="chooseImage">
+        <text style="font-size: 50rpx; color: #ccc;">+</text>
+      </view>
+    </view>
   </view>
 <!-- ✨ 模式C：图片谱模式 (多图版) -->
 <view class="form-area" wx:if="{{type === 'image'}}">
