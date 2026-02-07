@@ -196,7 +196,14 @@ miniprogram-2/
 
 ## 📄 License
 
-MIT License © 2024
+GNU General Public License v3.0 (GPLv3) © 2024
+
+本项目采用 GPLv3 许可证。这意味着：
+- ✅ 可以自由使用、修改和分发本项目代码
+- ⚠️ **任何基于本项目的修改版本也必须开源并采用相同许可证**
+- ⚠️ 必须保留原作者的版权声明和许可证说明
+
+详见 [LICENSE](./LICENSE) 文件。
 
 ## 🤝 贡献
 
