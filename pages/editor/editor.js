@@ -9,6 +9,8 @@ Page({
     title: '',
     artist: '',
     comment: '', // ✨ 新增备注变量
+    instrument: '吉他',
+    style: '弹唱',
 
     // 自制谱数据
     key: 'C', originalKey: 'C', capo: 0, timeSignature: '4/4', bpm: 90, tuning: '标准',
@@ -19,7 +21,10 @@ Page({
     location: '',
 
     // 图片谱数据
-    imagePaths: []
+    imagePaths: [],
+
+    // 乐器类型
+    instrument: '吉他'
   },
 
   onLoad(options) {
@@ -58,7 +63,9 @@ Page({
           content: song.content,
           location: song.location,
           imagePaths: paths,
-          comment: song.comment || ''
+          comment: song.comment || '',
+          instrument: song.instrument || '吉他', // 如果没有 instrument 字段，默认设为 '吉他'
+          style: song.style || '弹唱' // 如果没有 style 字段，默认设为 '弹唱'
         });
         wx.setNavigationBarTitle({ title: '编辑乐谱' });
       } else {
@@ -141,7 +148,9 @@ Page({
         content: this.data.content,
         location: this.data.location,
         imagePaths: finalImagePaths, // ✨ 存入云端文件 ID
-        comment: this.data.comment // ✨ 将备注存入云端
+        comment: this.data.comment, // ✨ 将备注存入云端
+        instrument: this.data.instrument, // 存储乐器类型
+        style: this.data.style // 存储风格类型
       };
 
       // 4. 写入数据库

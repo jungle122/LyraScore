@@ -15,6 +15,30 @@
     model:value="{{artist}}" 
   />
 
+  <!-- 乐器选择器 -->
+  <view class="instrument-selector">
+    <radio-group model:value="{{instrument}}">
+      <label class="radio-label">
+        <radio value="吉他" /> 吉他
+      </label>
+      <label class="radio-label">
+        <radio value="尤克里里" /> 尤克里里
+      </label>
+    </radio-group>
+  </view>
+
+  <!-- 风格选择器 -->
+  <view class="style-selector">
+    <radio-group model:value="{{style}}">
+      <label class="radio-label">
+        <radio value="弹唱" /> 弹唱
+      </label>
+      <label class="radio-label">
+        <radio value="指弹" /> 指弹
+      </label>
+    </radio-group>
+  </view>
+
   <!-- 自制谱模式 -->
   <view class="form-area" wx:if="{{type === 'blank'}}">
     

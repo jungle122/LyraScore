@@ -12,22 +12,13 @@ view, text {
   width: 100%;
 }
 
-.header {
-  margin-bottom: 40rpx;
-  width: 100%;
-  text-align: center;
-}
-.header-title { font-size: 48rpx; font-weight: bold; color: #333; display: block; }
-.header-subtitle { font-size: 28rpx; color: #999; margin-top: 10rpx; display: block; }
-/* ... header 样式之后 ... */
-
 /* 伪搜索框样式 */
 .search-entry {
   /*padding: 0 30rpx;*/
   padding: flex;
-  margin-bottom: 30rpx;
-  /* ✨ 新增这一行：强制头部留出距离 */
-  margin-top: 30rpx;
+  margin-bottom: 20rpx;
+  /* 与三行栏目和曲目列表的间距保持一致 */
+  margin-top: 0;
 }
 
 .search-box {

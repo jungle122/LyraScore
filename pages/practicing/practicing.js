@@ -2,7 +2,10 @@ const db = wx.cloud.database(); // ✨ 初始化云数据库
 
 Page({
   data: {
-    songList: []
+    songList: [],
+    selectedInstrument: 'all', // 筛选条件，默认显示全部
+    selectedStyle: 'all', // 风格筛选条件，默认显示全部
+    selectedSort: 'newest' // 排序条件，默认按最新存
   },
 
   onShow() {
@@ -12,21 +15,42 @@ Page({
   loadSongs() {
     wx.showLoading({ title: '加载中...' });
 
-    // ☁️ 云开发查询写法
-    // collection('songs'): 找 'songs' 表
-    // where(...): 筛选条件
-    // get(): 执行查询
-    db.collection('songs')
-      .where({
-        // 筛选逻辑：状态是 practicing (注意：云开发查询对空值比较严格，我们先只查明确标记为 practicing 的)
-        // 如果你有很多旧数据没有 status 字段，它们可能暂时显示不出来，我们后续可以写个脚本批量刷一下
-        status: 'practicing'
-      })
-      .get()
+    let whereCondition = { status: 'practicing' };
+
+    // 乐器筛选条件
+    if (this.data.selectedInstrument !== 'all') {
+      const instrumentMap = {
+        'guitar': '吉他',
+        'ukulele': '尤克里里'
+      };
+      const instrumentValue = instrumentMap[this.data.selectedInstrument];
+      whereCondition.instrument = instrumentValue;
+    }
+
+    // 风格筛选条件
+    if (this.data.selectedStyle !== 'all') {
+      const styleMap = {
+        'fingerstyle': '弹唱',
+        'picking': '指弹'
+      };
+      const styleValue = styleMap[this.data.selectedStyle];
+      whereCondition.style = styleValue;
+    }
+
+    let query = db.collection('songs').where(whereCondition);
+
+    // 排序条件
+    if (this.data.selectedSort === 'newest') {
+      query = query.orderBy('id', 'desc');
+    } else if (this.data.selectedSort === 'oldest') {
+      query = query.orderBy('id', 'asc');
+    } else if (this.data.selectedSort === 'name') {
+      query = query.orderBy('title', 'asc');
+    }
+
+    query.get()
       .then(res => {
-        // res.data 就是查出来的数组
         console.log('云端获取成功:', res.data);
-        
         this.setData({
           songList: res.data
         });
@@ -68,5 +92,23 @@ Page({
       title: 'Lyra吉他谱本：吉他手的私人云端琴房☁️',
       query: 'from=timeline'
     }
-  }
+  },
+
+  onFilterChange(e) {
+    const selectedInstrument = e.currentTarget.dataset.value;
+    this.setData({ selectedInstrument });
+    this.loadSongs();
+  },
+
+  onStyleChange(e) {
+    const selectedStyle = e.currentTarget.dataset.value;
+    this.setData({ selectedStyle });
+    this.loadSongs();
+  },
+
+  onSortChange(e) {
+    const selectedSort = e.currentTarget.dataset.value;
+    this.setData({ selectedSort });
+    this.loadSongs();
+  },
 });

@@ -6,6 +6,7 @@ Page({
     showDrawer: false,
     fontSize: 36,
     initialY: 0, // ✨ 改名为 initialY，表示只负责初始位置
+    isKeepScreenOn: false, // ✨ 屏幕常亮开关
     
     // --- 节拍器数据 ---
     isPlaying: false,
@@ -38,6 +39,10 @@ Page({
 
   onUnload() {
     this.stopMetronome();
+    
+    // ✨ 退出时强制关闭屏幕常亮，保护用户电池
+    wx.setKeepScreenOn({ keepScreenOn: false });
+    
     // 挂起音频引擎，节省资源
     if (this.data.audioCtx) this.data.audioCtx.suspend();
   },
@@ -175,6 +180,20 @@ Page({
   openDrawer() { this.setData({ showDrawer: true }); },
   closeDrawer() { this.setData({ showDrawer: false }); },
   onZoomChange(e) { this.setData({ fontSize: e.detail.value }); },
+
+  // ✨ 屏幕常亮开关（屏幕保护锁）
+  toggleKeepScreen(e) {
+    const isOn = e.detail.value;
+    this.setData({ isKeepScreenOn: isOn });
+    
+    // 调用微信 API 设置屏幕常亮
+    wx.setKeepScreenOn({ 
+      keepScreenOn: isOn,
+      success: () => {
+        console.log(isOn ? '屏幕常亮已启用 🔒' : '屏幕常亮已关闭 🔓');
+      }
+    });
+  },
 
   goToEdit() {
     this.closeDrawer();

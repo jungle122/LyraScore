@@ -1,0 +1,30 @@
+/* 筛选和排序胶囊样式 */
+.filter-sort {
+  margin-top: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.filter-bar, .sort-bar {
+  display: flex;
+  flex-direction: row;
+  overflow-x: scroll;
+  white-space: nowrap;
+  padding: 10rpx 0;
+}
+
+.filter-capsule {
+  display: inline-block;
+  padding: 10rpx 20rpx;
+  margin-right: 10rpx;
+  font-size: 26rpx;
+  border-radius: 30rpx;
+  background-color: #f0f0f0;
+  color: #000;
+  text-align: center;
+}
+
+.filter-capsule.active {
+  background-color: #FA7298;
+  color: #fff;
+}
+

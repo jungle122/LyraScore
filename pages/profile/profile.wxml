@@ -1,7 +1,7 @@
 <view class="container">
   
-    <!-- ✨ 统一标题样式 -->
-    <view class="header">
+  <!-- ✨ 统一标题样式 -->
+  <view class="header">
     <text class="header-title">Lyra吉他谱本</text>
   </view>
 

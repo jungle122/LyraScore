@@ -3,7 +3,10 @@ const db = wx.cloud.database();
 
 Page({
   data: {
-    songList: []
+    songList: [],
+    selectedInstrument: 'all', // 筛选条件，默认显示全部
+    selectedStyle: 'all', // 风格筛选条件，默认显示全部
+    selectedSort: 'newest' // 排序条件，默认按最新存
   },
 
   onShow() {
@@ -13,12 +16,40 @@ Page({
   loadFinishedSongs() {
     wx.showLoading({ title: '加载中...' });
 
-    // ✨ 核心修改：从云端获取状态为 'finished' 的歌
-    db.collection('songs')
-      .where({
-        status: 'finished'
-      })
-      .get()
+    let whereCondition = { status: 'finished' };
+
+    // 乐器筛选条件
+    if (this.data.selectedInstrument !== 'all') {
+      const instrumentMap = {
+        'guitar': '吉他',
+        'ukulele': '尤克里里'
+      };
+      const instrumentValue = instrumentMap[this.data.selectedInstrument];
+      whereCondition.instrument = instrumentValue;
+    }
+
+    // 风格筛选条件
+    if (this.data.selectedStyle !== 'all') {
+      const styleMap = {
+        'fingerstyle': '弹唱',
+        'picking': '指弹'
+      };
+      const styleValue = styleMap[this.data.selectedStyle];
+      whereCondition.style = styleValue;
+    }
+
+    let query = db.collection('songs').where(whereCondition);
+
+    // 排序条件
+    if (this.data.selectedSort === 'newest') {
+      query = query.orderBy('id', 'desc');
+    } else if (this.data.selectedSort === 'oldest') {
+      query = query.orderBy('id', 'asc');
+    } else if (this.data.selectedSort === 'name') {
+      query = query.orderBy('title', 'asc');
+    }
+
+    query.get()
       .then(res => {
         console.log('已练完列表获取成功:', res.data);
         this.setData({
@@ -30,6 +61,24 @@ Page({
         console.error('云端获取失败:', err);
         wx.hideLoading();
       });
+  },
+
+  onFilterChange(e) {
+    const selectedInstrument = e.currentTarget.dataset.value;
+    this.setData({ selectedInstrument });
+    this.loadFinishedSongs();
+  },
+
+  onStyleChange(e) {
+    const selectedStyle = e.currentTarget.dataset.value;
+    this.setData({ selectedStyle });
+    this.loadFinishedSongs();
+  },
+
+  onSortChange(e) {
+    const selectedSort = e.currentTarget.dataset.value;
+    this.setData({ selectedSort });
+    this.loadFinishedSongs();
   },
 
   // 跳转到阅读页 (逻辑与“正在练”一致)

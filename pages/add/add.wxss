@@ -1,11 +1,8 @@
-/* ✨ 1. 全局修正：立好规矩，防止宽度溢出 */
 page {
   background-color: #f8f8f8;
-  /* 魔法指令：让 padding 往盒子里挤，而不是往外撑 */
   box-sizing: border-box; 
 }
 
-/* 让所有 view 和 text 都遵守这个规矩 */
 view, text {
   box-sizing: border-box;
 }
@@ -13,36 +10,35 @@ view, text {
 .container {
   padding: 30rpx;
   width: 100%;
-  /* 确保容器本身不产生额外的偏移 */
-  display: block; 
 }
 
-/* ✨ 2. 标题区：绝对居中 */
-.header {
+/* ✨ 简洁的顶部标题区 */
+.add-header {
   margin-bottom: 40rpx;
   width: 100%;
   text-align: center;
 }
 
-.header-title {
+.add-title {
   font-size: 48rpx;
   font-weight: bold;
   color: #333;
   display: block;
 }
 
-/* ✨ 3. 菜单列表：微调 */
+/* ✨ 菜单列表 */
 .menu-list {
   display: flex;
   flex-direction: column;
   gap: 24rpx;
+  margin-top: 0;
 }
 
 .menu-card {
   width: 100%;
   background-color: #fff;
-  border-radius: 24rpx; /* 圆角加大一点点，更圆润 */
-  padding: 40rpx 30rpx; /* 上下加厚，更有质感 */
+  border-radius: 20rpx;
+  padding: 30rpx;
   display: flex;
   align-items: center;
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
@@ -56,6 +52,7 @@ view, text {
   align-items: center;
   justify-content: center;
   margin-right: 30rpx;
+  flex-shrink: 0;
 }
 
 .menu-icon-img {
@@ -67,10 +64,11 @@ view, text {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .card-title {
-  font-size: 36rpx; /* 字号微调 */
+  font-size: 36rpx;
   font-weight: bold;
   color: #333;
   margin-bottom: 8rpx;
@@ -84,4 +82,6 @@ view, text {
 .arrow {
   color: #ddd;
   font-size: 32rpx;
+  margin-left: 20rpx;
+  flex-shrink: 0;
 }

@@ -1,4 +1,5 @@
 const db = wx.cloud.database();
+const _ = db.command;
 
 Page({
   data: {
@@ -10,25 +11,38 @@ Page({
     const val = e.detail.value;
     this.setData({ keyword: val });
 
+    // 性能优化：keyword 为空时直接清空结果，不请求数据库
     if (!val) {
       this.setData({ resultList: [] });
       return;
     }
 
-    // ✨ 云开发模糊搜索核心逻辑
+    // ✨ 核心逻辑：排除回收站 + 双字段模糊搜索
     db.collection('songs').where({
-      // 使用正则表达式进行模糊匹配
-      // 'i' 表示不区分大小写
-      title: db.RegExp({
-        regexp: val,
-        options: 'i',
-      })
-      // 注意：由于云数据库限制，单个查询很难同时模糊搜 title 或 artist
-      // 这里的逻辑优先搜索标题，如果需要同时搜歌手，需要更高级的指令，咱们先保标题
+      // 条件1：排除已删除的记录（status !== 'deleted'）
+      status: _.neq('deleted'),
+      // 条件2：同时对 title 和 artist 进行包含匹配（$or 逻辑）
+      $or: [
+        {
+          title: db.RegExp({
+            regexp: val,
+            options: 'i',  // 不区分大小写
+          })
+        },
+        {
+          artist: db.RegExp({
+            regexp: val,
+            options: 'i',  // 不区分大小写
+          })
+        }
+      ]
     }).get().then(res => {
       this.setData({
         resultList: res.data
       });
+    }).catch(err => {
+      console.error('搜索失败:', err);
+      wx.showToast({ title: '搜索失败', icon: 'none' });
     });
   },
 

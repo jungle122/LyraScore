@@ -1,8 +1,7 @@
 <view class="container">
   
-  <!-- ✨ 标题区：统一为 header 类，实现居中 -->
-  <view class="header">
-    <text class="header-title">添加曲谱</text>
+  <view class="add-header">
+    <text class="add-title">添加曲谱</text>
   </view>
 
   <view class="menu-list">
