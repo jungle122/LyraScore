@@ -17,24 +17,43 @@
 
   <!-- 乐器选择器 -->
   <view class="instrument-selector">
-    <radio-group model:value="{{instrument}}">
-      <label class="radio-label">
-        <radio value="吉他" /> 吉他
+    <radio-group class="selector-group" value="{{instrument}}" bindchange="onInstrumentChange">
+      <label class="radio-label {{instrument === '吉他' ? 'is-checked' : ''}}">
+        <radio value="吉他" checked="{{instrument === '吉他'}}" />
+        <text class="radio-text">吉他</text>
       </label>
-      <label class="radio-label">
-        <radio value="尤克里里" /> 尤克里里
+      <label class="radio-label {{instrument === '尤克里里' ? 'is-checked' : ''}}">
+        <radio value="尤克里里" checked="{{instrument === '尤克里里'}}" />
+        <text class="radio-text">尤克里里</text>
       </label>
     </radio-group>
   </view>
 
   <!-- 风格选择器 -->
   <view class="style-selector">
-    <radio-group model:value="{{style}}">
-      <label class="radio-label">
-        <radio value="弹唱" /> 弹唱
+    <radio-group class="selector-group" value="{{style}}" bindchange="onStyleChange">
+      <label class="radio-label {{style === '弹唱' ? 'is-checked' : ''}}">
+        <radio value="弹唱" checked="{{style === '弹唱'}}" />
+        <text class="radio-text">弹唱</text>
       </label>
-      <label class="radio-label">
-        <radio value="指弹" /> 指弹
+      <label class="radio-label {{style === '指弹' ? 'is-checked' : ''}}">
+        <radio value="指弹" checked="{{style === '指弹'}}" />
+        <text class="radio-text">指弹</text>
+      </label>
+    </radio-group>
+  </view>
+
+  <!-- 状态选择器 (仅新建时显示) -->
+  <view class="status-selector" wx:if="{{!_id}}">
+    <text class="selector-title">状态</text>
+    <radio-group class="selector-group" value="{{status}}" bindchange="onStatusChange">
+      <label class="radio-label {{status === 'practicing' ? 'is-checked' : ''}}">
+        <radio value="practicing" checked="{{status === 'practicing'}}" />
+        <text class="radio-text">正在练</text>
+      </label>
+      <label class="radio-label {{status === 'finished' ? 'is-checked' : ''}}">
+        <radio value="finished" checked="{{status === 'finished'}}" />
+        <text class="radio-text">已练完</text>
       </label>
     </radio-group>
   </view>
@@ -104,6 +123,17 @@
         <text style="font-size: 50rpx; color: #ccc;">+</text>
       </view>
     </view>
+    <view class="import-actions">
+      <view class="chat-import-btn" bindtap="chooseFromChat">从聊天导入</view>
+    </view>
+    <view class="file-list" wx:if="{{filePaths.length > 0}}">
+      <view class="file-item" wx:for="{{filePaths}}" wx:key="*this">
+        <view class="file-info" bindtap="previewFile" data-path="{{item}}">
+          <text class="file-name">PDF 文件 {{index + 1}}</text>
+        </view>
+        <view class="file-delete" catchtap="removeFile" data-index="{{index}}">x</view>
+      </view>
+    </view>
   </view>
 <!-- ✨ 模式C：图片谱模式 (多图版) -->
 <view class="form-area" wx:if="{{type === 'image'}}">
@@ -128,8 +158,19 @@
         <text style="font-size: 50rpx; color: #ccc;">+</text>
       </view>
     </view>
+    <view class="import-actions">
+      <view class="chat-import-btn" bindtap="chooseFromChat">从聊天导入</view>
+    </view>
     
     <text class="hint-text">最多可选9张，点击 x 删除</text>
+    <view class="file-list" wx:if="{{filePaths.length > 0}}">
+      <view class="file-item" wx:for="{{filePaths}}" wx:key="*this">
+        <view class="file-info" bindtap="previewFile" data-path="{{item}}">
+          <text class="file-name">PDF 文件 {{index + 1}}</text>
+        </view>
+        <view class="file-delete" catchtap="removeFile" data-index="{{index}}">x</view>
+      </view>
+    </view>
   </view>
   <!-- ✨ 新增：备注区域 -->
 <view class="comment-section">

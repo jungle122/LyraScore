@@ -10,8 +10,8 @@
 
   <!-- 标题区 -->
   <view class="header-area">
-    <text class="title">{{song.title}}</text>
-    <text class="artist" wx:if="{{song.artist}}">{{song.artist}}</text>
+    <text class="title" user-select="true">{{song.title}}</text>
+    <text class="artist" user-select="true">{{song.artist ? song.artist : ' - '}}</text>
   </view>
 
   <!-- 参数区 -->
@@ -32,56 +32,43 @@
     <text>📍 曲谱位于：{{song.location}}</text>
   </view>
 
-  <!-- ✨ 新增：进度标记轨道 -->
-  <!-- movable-area 必须覆盖整个乐谱区域 -->
-  <movable-area class="progress-track">
-    
-    <!-- 1. 原有的内容（图片或歌词） -->
-    <!-- ✨ 图片谱展示 (遍历显示，点击全屏) -->
-    <view class="image-content" wx:if="{{song.imagePaths.length > 0}}">
-      <block wx:for="{{song.imagePaths}}" wx:key="*this">
-        <image 
-          src="{{item}}" 
-          mode="widthFix" 
-          lazy-load="true" 
-          style="width: 100%; display: block; margin-bottom: 20rpx; background-color: #f0f0f0; min-height: 400rpx;"
-          bindtap="previewImage"
-          data-current="{{item}}"
-        />
-      </block>
-    </view>
-    
-    <!-- 歌词区 -->
-    <!-- ✨ 核心：style="font-size: {{fontSize}}rpx" -->
-    <!-- 这样我们拖动滑块，字就会变大变小 -->
-    <text 
-      class="content-area" 
-      user-select="true" 
-      style="font-size: {{fontSize}}rpx"
-      wx:if="{{song.content}}" 
-    >{{song.content}}</text>
-    
-    <!-- ✨【重点】备注应该放在这里！在 container 的末尾，和歌词并列 -->
-    <view class="reader-comment" wx:if="{{song.comment}}">
-      <view class="comment-tag">MEMO</view>
-      <text class="comment-text">{{song.comment}}</text>
-    </view>
+  <!-- ✨ 图片谱展示 (遍历显示，点击全屏) -->
+  <view class="image-content" wx:if="{{song.imagePaths.length > 0}}">
+    <block wx:for="{{song.imagePaths}}" wx:key="*this">
+      <image 
+        src="{{item}}" 
+        mode="widthFix" 
+        lazy-load="true" 
+        style="width: 100%; display: block; margin-bottom: 20rpx; background-color: #f0f0f0; min-height: 400rpx;"
+        bindtap="previewImage"
+        data-current="{{item}}"
+      />
+    </block>
+  </view>
 
-    <!-- 2. ✨ 核心：那条可调节的红线 -->
-    <!-- direction="vertical": 只能上下滑动 -->
-    <!-- out-of-bounds: 允许滑出边界一点点，手感更好 -->
-    <movable-view 
-      class="red-ruler" 
-      direction="vertical" 
-      y="{{initialY}}" 
-      bindchange="onRulerChange"
-      out-of-bounds="true"
-    >
-      <view class="ruler-line"></view>
-      <view class="ruler-handle">练到这了</view>
-    </movable-view>
-
-  </movable-area>
+  <view class="file-list" wx:if="{{song.filePaths && song.filePaths.length > 0}}">
+    <view class="file-item" wx:for="{{song.filePaths}}" wx:key="*this">
+      <view class="file-info" bindtap="openFile" data-path="{{item}}">
+        <text class="file-name">PDF 文件 {{index + 1}}</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 歌词区 -->
+  <!-- ✨ 核心：style="font-size: {{fontSize}}rpx" -->
+  <!-- 这样我们拖动滑块，字就会变大变小 -->
+  <text 
+    class="content-area" 
+    user-select="true" 
+    style="font-size: {{fontSize}}rpx"
+    wx:if="{{song.content}}" 
+  >{{song.content}}</text>
+  
+  <!-- ✨【重点】备注应该放在这里！在 container 的末尾，和歌词并列 -->
+  <view class="reader-comment" wx:if="{{song.comment}}">
+    <view class="comment-tag">MEMO</view>
+    <text class="comment-text" user-select="true">{{song.comment}}</text>
+  </view>
 </view>
 
 <!-- ========================= -->

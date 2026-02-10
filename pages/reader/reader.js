@@ -3,9 +3,9 @@ const db = wx.cloud.database();
 Page({
   data: {
     song: null,
+    currentSongId: null,
     showDrawer: false,
     fontSize: 36,
-    initialY: 0, // ✨ 改名为 initialY，表示只负责初始位置
     isKeepScreenOn: false, // ✨ 屏幕常亮开关
     
     // --- 节拍器数据 ---
@@ -20,6 +20,7 @@ Page({
 
   onLoad(options) {
     const id = Number(options.id);
+    this.setData({ currentSongId: id });
     
     // 1. 加载歌曲信息
     this.loadSongFromCloud(id);
@@ -35,6 +36,12 @@ Page({
     // 3. 创建 WebAudio 上下文并预加载声音
     this.data.audioCtx = wx.createWebAudioContext();
     this.loadTickSound();
+  },
+
+  onShow() {
+    if (this.data.currentSongId) {
+      this.loadSongFromCloud(this.data.currentSongId);
+    }
   },
 
   onUnload() {
@@ -165,8 +172,7 @@ Page({
         }
         this.setData({
           song: targetSong,
-          currentBpm: targetSong.bpm || 90,
-          initialY: targetSong.rulerY || 0 // 默认在最上面
+          currentBpm: targetSong.bpm || 90
         });
         wx.setNavigationBarTitle({ title: targetSong.title });
       }
@@ -242,29 +248,17 @@ Page({
     });
   },
 
-  // ✨ 核心函数：记录红尺位置
-  onRulerChange(e) {
-    // 只有手动拖动(touch)引起的改变，我们才记录
-    if (e.detail.source === 'touch') {
-      const newY = e.detail.y;
-      
-      // 🛑 核心修复：这里绝对不要再写 this.setData({ initialY: newY })
-      // 因为这会触发组件重新渲染，导致"重播"
-      
-      // 我们只需要执行保存逻辑即可
-      this.saveRulerPosition(newY);
+  async openFile(e) {
+    const path = e.currentTarget.dataset.path;
+    let filePath = path;
+
+    if (path.startsWith('cloud://')) {
+      const res = await wx.cloud.downloadFile({ fileID: path });
+      filePath = res.tempFilePath;
     }
+
+    wx.openDocument({ filePath: filePath });
   },
 
-  saveRulerPosition(y) {
-    db.collection('songs').doc(this.data.song._id).update({
-      data: {
-        rulerY: y
-      }
-    }).then(() => {
-      console.log('进度已自动保存:', y);
-    });
-  },
-  
   saveImage() { wx.showToast({ title: '功能开发中', icon: 'none' }); }
 });

@@ -11,6 +11,7 @@ Page({
     comment: '', // ✨ 新增备注变量
     instrument: '吉他',
     style: '弹唱',
+    status: 'practicing',
 
     // 自制谱数据
     key: 'C', originalKey: 'C', capo: 0, timeSignature: '4/4', bpm: 90, tuning: '标准',
@@ -22,9 +23,7 @@ Page({
 
     // 图片谱数据
     imagePaths: [],
-
-    // 乐器类型
-    instrument: '吉他'
+    filePaths: [],
   },
 
   onLoad(options) {
@@ -63,9 +62,11 @@ Page({
           content: song.content,
           location: song.location,
           imagePaths: paths,
+          filePaths: song.filePaths || [],
           comment: song.comment || '',
           instrument: song.instrument || '吉他', // 如果没有 instrument 字段，默认设为 '吉他'
-          style: song.style || '弹唱' // 如果没有 style 字段，默认设为 '弹唱'
+          style: song.style || '弹唱', // 如果没有 style 字段，默认设为 '弹唱'
+          status: song.status || 'practicing'
         });
         wx.setNavigationBarTitle({ title: '编辑乐谱' });
       } else {
@@ -86,6 +87,18 @@ Page({
     wx.setNavigationBarTitle({ title: titleText });
   },
 
+  onInstrumentChange(e) {
+    this.setData({ instrument: e.detail.value });
+  },
+
+  onStyleChange(e) {
+    this.setData({ style: e.detail.value });
+  },
+
+  onStatusChange(e) {
+    this.setData({ status: e.detail.value });
+  },
+
   // --- 图片选择逻辑 (和之前一样) ---
   chooseImage() {
     wx.chooseMedia({
@@ -99,6 +112,43 @@ Page({
     });
   },
 
+  chooseFromChat() {
+    wx.showActionSheet({
+      itemList: ['聊天图片', '聊天文件(PDF)'],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          this.chooseChatImages();
+        } else if (res.tapIndex === 1) {
+          this.chooseChatFiles();
+        }
+      }
+    });
+  },
+
+  chooseChatImages() {
+    wx.chooseMessageFile({
+      count: 9,
+      type: 'image',
+      extension: ['jpg', 'jpeg', 'png'],
+      success: (res) => {
+        const newFiles = res.tempFiles.map(f => f.path);
+        this.setData({ imagePaths: this.data.imagePaths.concat(newFiles) });
+      }
+    });
+  },
+
+  chooseChatFiles() {
+    wx.chooseMessageFile({
+      count: 9,
+      type: 'file',
+      extension: ['pdf'],
+      success: (res) => {
+        const newFiles = res.tempFiles.map(f => f.path);
+        this.setData({ filePaths: this.data.filePaths.concat(newFiles) });
+      }
+    });
+  },
+
   removeImage(e) {
     const index = e.currentTarget.dataset.index;
     const newPaths = this.data.imagePaths;
@@ -106,9 +156,28 @@ Page({
     this.setData({ imagePaths: newPaths });
   },
 
+  removeFile(e) {
+    const index = e.currentTarget.dataset.index;
+    const newPaths = this.data.filePaths;
+    newPaths.splice(index, 1);
+    this.setData({ filePaths: newPaths });
+  },
+
   previewCurrent(e) {
     const currentUrl = e.currentTarget.dataset.url;
     wx.previewImage({ current: currentUrl, urls: this.data.imagePaths });
+  },
+
+  async previewFile(e) {
+    const path = e.currentTarget.dataset.path;
+    let filePath = path;
+
+    if (path.startsWith('cloud://')) {
+      const res = await wx.cloud.downloadFile({ fileID: path });
+      filePath = res.tempFilePath;
+    }
+
+    wx.openDocument({ filePath: filePath });
   },
 
   // --- ✨ 核心逻辑 2：保存 (上传图片 + 写入数据库) ---
@@ -119,7 +188,7 @@ Page({
       return;
     }
     // 只有在【纯图片谱模式】下才强制要求选图
-    if (this.data.type === 'image' && this.data.imagePaths.length === 0) {
+    if (this.data.type === 'image' && this.data.imagePaths.length === 0 && this.data.filePaths.length === 0) {
       wx.showToast({ title: '请至少选一张图', icon: 'none' });
       return;
     }
@@ -130,6 +199,7 @@ Page({
       // 2. 处理图片上传 (关键步骤！)
       // 只有那些还没上传的（不是 cloud:// 开头的）才需要上传
       const finalImagePaths = await this.uploadAllImages();
+      const finalFilePaths = await this.uploadAllFiles();
 
       // 3. 准备数据对象
       const songData = {
@@ -148,6 +218,7 @@ Page({
         content: this.data.content,
         location: this.data.location,
         imagePaths: finalImagePaths, // ✨ 存入云端文件 ID
+        filePaths: finalFilePaths,
         comment: this.data.comment, // ✨ 将备注存入云端
         instrument: this.data.instrument, // 存储乐器类型
         style: this.data.style // 存储风格类型
@@ -162,7 +233,7 @@ Page({
         });
       } else {
         // --- 新建模式 (Add) ---
-        songData.status = 'practicing'; // 新歌默认正在练
+        songData.status = this.data.status || 'practicing';
         await db.collection('songs').add({
           data: songData
         });
@@ -204,6 +275,26 @@ Page({
     });
 
     // 等待所有图片都处理完
+    return Promise.all(uploadTasks);
+  },
+
+  uploadAllFiles() {
+    const uploadTasks = this.data.filePaths.map(path => {
+      if (path.startsWith('cloud://')) {
+        return Promise.resolve(path);
+      }
+
+      const ext = path.split('.').pop() || 'pdf';
+      const cloudPath = `my_scores/files/${Date.now()}-${Math.floor(Math.random()*1000)}.${ext}`;
+
+      return wx.cloud.uploadFile({
+        cloudPath: cloudPath,
+        filePath: path
+      }).then(res => {
+        return res.fileID;
+      });
+    });
+
     return Promise.all(uploadTasks);
   },
   // 分享给朋友

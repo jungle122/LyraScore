@@ -230,44 +230,21 @@ view, text, scroll-view {
   line-height: 1.5;
 }
 
-/* ========================= */
-/* ✨ 悬浮红尺样式 */
-/* ========================= */
-
-/* 进度轨道：必须填满父容器 */
-.progress-track {
-  width: 100%;
-  /* ✨ 核心：取消固定高度，改为 min-height */
-  min-height: 100vh; 
-  /* 加上这个，保证区域始终包裹内容 */
-  height: 100%; 
-  position: relative;
+.file-list {
+  margin: 20rpx 0 40rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
 }
 
-/* 红尺容器 */
-.red-ruler {
-  width: 100%;
-  height: 60rpx; /* 给一个感应高度，方便手指抓取 */
-  z-index: 100;
+.file-item {
+  padding: 16rpx 20rpx;
+  border-radius: 12rpx;
+  background: #f7f7f7;
 }
 
-/* 真正的红线 */
-.ruler-line {
-  width: 100%;
-  height: 4rpx;
-  background-color: rgba(250, 114, 152, 0.6); /* 你的主题粉色，带透明度 */
-  box-shadow: 0 0 10rpx rgba(250, 114, 152, 0.4);
+.file-name {
+  font-size: 28rpx;
+  color: #333;
 }
 
-/* 线头上的小标签 */
-.ruler-handle {
-  position: absolute;
-  right: 0;
-  top: -30rpx;
-  background-color: #FA7298;
-  color: white;
-  font-size: 20rpx;
-  padding: 4rpx 12rpx;
-  border-radius: 20rpx 0 0 20rpx;
-  opacity: 0.8;
-}

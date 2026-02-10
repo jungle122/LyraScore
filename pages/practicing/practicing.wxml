@@ -1,11 +1,24 @@
+<wxs src="./practicing.wxs" module="utils" />
 <view class="container">
   
-  <!-- 伪搜索框：其实是一个按钮 -->
-  <view class="search-entry" bindtap="goToSearch">
-    <view class="search-box">
-      <text class="search-icon">🔍</text> 
-      <text class="search-text">搜索曲谱...</text>
+  <view class="top-bar" wx:if="{{!isEditMode}}">
+    <!-- 伪搜索框：其实是一个按钮 -->
+    <view class="search-entry" bindtap="goToSearch">
+      <view class="search-box">
+        <text class="search-icon">🔍</text> 
+        <text class="search-text">搜索曲谱...</text>
+      </view>
     </view>
+    <view class="manage-btn" bindtap="toggleEditMode">管理</view>
+  </view>
+
+  <view class="manage-toolbar" wx:if="{{isEditMode}}">
+    <view class="toolbar-left" bindtap="toggleSelectAll">
+      <view class="select-all-circle {{selectedIds.length > 0 && selectedIds.length === songList.length ? 'checked' : ''}}"></view>
+      <text class="toolbar-text">全选</text>
+    </view>
+    <text class="toolbar-count">已选 {{selectedIds.length}}</text>
+    <view class="toolbar-done" bindtap="toggleEditMode">完成</view>
   </view>
 
   <!-- 筛选和排序胶囊 -->
@@ -34,10 +47,11 @@
     <block wx:for="{{songList}}" wx:key="id">
       
       <!-- 回归最简单的卡片，点击直接跳转 -->
-      <view class="song-card" bindtap="goToDetail" data-id="{{item.id}}">
+      <view class="song-card" bindtap="onCardTap" data-id="{{item.id}}" data-uid="{{item._id}}">
+        <view class="select-circle {{utils.isSelected(selectedIds, item._id) ? 'checked' : ''}}" wx:if="{{isEditMode}}" catchtap="toggleSelectItem" data-uid="{{item._id}}"></view>
         <view class="card-info">
           <text class="song-title">{{item.title}}</text>
-          <text class="song-artist" wx:if="{{item.artist}}">{{item.artist}}</text>
+          <text class="song-artist">{{item.artist ? item.artist : ' - '}}</text>
           <text class="song-meta" wx:if="{{item.type === 'paper'}}">📍 {{item.location}}</text>
           <text class="song-meta" wx:if="{{item.type === 'blank'}}">🎼 {{item.key}}调 | {{item.bpm}} BPM</text>
         </view>
@@ -52,6 +66,11 @@
   <view class="empty-state" wx:if="{{songList.length === 0}}">
     <text>还没有正在练习的曲谱</text>
     <text>点击底部 + 号添加吧</text>
+  </view>
+
+  <view class="action-bar" wx:if="{{isEditMode}}">
+    <view class="action-btn delete-btn {{selectedIds.length === 0 ? 'disabled' : ''}}" bindtap="batchDelete">删除</view>
+    <view class="action-btn {{selectedIds.length === 0 ? 'disabled' : ''}}" bindtap="batchMove">移至已练完</view>
   </view>
 
 </view>

@@ -5,7 +5,9 @@ Page({
     songList: [],
     selectedInstrument: 'all', // 筛选条件，默认显示全部
     selectedStyle: 'all', // 风格筛选条件，默认显示全部
-    selectedSort: 'newest' // 排序条件，默认按最新存
+    selectedSort: 'newest', // 排序条件，默认按最新存
+    isEditMode: false,
+    selectedIds: []
   },
 
   onShow() {
@@ -70,6 +72,106 @@ Page({
     // 如果是新录入的，我们以后尽量用 _id，但现在先不动这个逻辑
     const id = e.currentTarget.dataset.id;
     wx.navigateTo({ url: `/pages/reader/reader?id=${id}` });
+  },
+  
+  toggleEditMode() {
+    const nextMode = !this.data.isEditMode;
+    this.setData({ isEditMode: nextMode, selectedIds: [] });
+  },
+
+  onCardTap(e) {
+    if (this.data.isEditMode) {
+      this.toggleSelectById(e.currentTarget.dataset.uid);
+      return;
+    }
+
+    const id = e.currentTarget.dataset.id;
+    wx.navigateTo({ url: `/pages/reader/reader?id=${id}` });
+  },
+
+  toggleSelectItem(e) {
+    this.toggleSelectById(e.currentTarget.dataset.uid);
+  },
+
+  toggleSelectById(uid) {
+    const selected = this.data.selectedIds.slice();
+    const idx = selected.indexOf(uid);
+    if (idx >= 0) {
+      selected.splice(idx, 1);
+    } else {
+      selected.push(uid);
+    }
+    this.setData({ selectedIds: selected });
+  },
+
+  toggleSelectAll() {
+    const isAllSelected = this.data.selectedIds.length > 0 && this.data.selectedIds.length === this.data.songList.length;
+    if (isAllSelected) {
+      this.setData({ selectedIds: [] });
+    } else {
+      const allIds = this.data.songList.map(item => item._id).filter(Boolean);
+      this.setData({ selectedIds: allIds });
+    }
+  },
+
+  async batchDelete() {
+    if (this.data.selectedIds.length === 0) {
+      wx.showToast({ title: '请先选择曲谱', icon: 'none' });
+      return;
+    }
+
+    const res = await new Promise(resolve => {
+      wx.showModal({
+        title: '批量删除',
+        content: `确定删除选中的 ${this.data.selectedIds.length} 首曲谱吗？`,
+        confirmText: '删除',
+        confirmColor: '#FA7298',
+        success: resolve
+      });
+    });
+
+    if (!res.confirm) return;
+
+    wx.showLoading({ title: '处理中...' });
+    try {
+      await Promise.all(this.data.selectedIds.map(id =>
+        db.collection('songs').doc(id).update({
+          data: { status: 'deleted', deleteDate: Date.now() }
+        })
+      ));
+      wx.showToast({ title: '已删除', icon: 'success' });
+      this.setData({ isEditMode: false, selectedIds: [] });
+      this.loadSongs();
+    } catch (err) {
+      console.error('批量删除失败:', err);
+      wx.showToast({ title: '操作失败', icon: 'none' });
+    } finally {
+      wx.hideLoading();
+    }
+  },
+
+  async batchMove() {
+    if (this.data.selectedIds.length === 0) {
+      wx.showToast({ title: '请先选择曲谱', icon: 'none' });
+      return;
+    }
+
+    wx.showLoading({ title: '处理中...' });
+    try {
+      await Promise.all(this.data.selectedIds.map(id =>
+        db.collection('songs').doc(id).update({
+          data: { status: 'finished', deleteDate: null }
+        })
+      ));
+      wx.showToast({ title: '已移动', icon: 'success' });
+      this.setData({ isEditMode: false, selectedIds: [] });
+      this.loadSongs();
+    } catch (err) {
+      console.error('批量移动失败:', err);
+      wx.showToast({ title: '操作失败', icon: 'none' });
+    } finally {
+      wx.hideLoading();
+    }
   },
     // ✨ 跳转到搜索页
     goToSearch() {

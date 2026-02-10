@@ -10,15 +10,65 @@ view, text {
 .container {
   padding: 30rpx; /* 恢复左右边距 */
   width: 100%;
+  padding-bottom: 140rpx; /* 给底部操作栏留空间 */
 }
 
 /* 伪搜索框样式 */
-.search-entry {
-  /*padding: 0 30rpx;*/
-  padding: flex;
+.top-bar {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
   margin-bottom: 20rpx;
-  /* 与三行栏目和曲目列表的间距保持一致 */
-  margin-top: 0; 
+}
+
+.search-entry {
+  flex: 1;
+  margin-top: 0;
+}
+
+.manage-btn {
+  height: 80rpx;
+  padding: 0 26rpx;
+  border-radius: 40rpx;
+  background: #fff5f8;
+  color: #FA7298;
+  font-size: 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1rpx solid rgba(250, 114, 152, 0.5);
+}
+
+.manage-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 16rpx 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+  margin-bottom: 20rpx;
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.toolbar-text {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.toolbar-count {
+  font-size: 26rpx;
+  color: #333;
+}
+
+.toolbar-done {
+  font-size: 26rpx;
+  color: #FA7298;
 }
 
 .search-box {
@@ -57,6 +107,64 @@ view, text {
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
 }
 
+.select-circle {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  border: 2rpx solid #ccc;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.select-circle.checked {
+  background: #FA7298;
+  border-color: #FA7298;
+  transform: scale(1.1);
+}
+
+.select-circle.checked:after {
+  content: '';
+  position: absolute;
+  width: 12rpx;
+  height: 20rpx;
+  border-right: 4rpx solid #fff;
+  border-bottom: 4rpx solid #fff;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+/* 全选按钮样式 */
+.select-all-circle {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  border: 2rpx solid #ccc;
+  flex-shrink: 0;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.select-all-circle.checked {
+  background: #FA7298;
+  border-color: #FA7298;
+  transform: scale(1.1);
+}
+
+.select-all-circle.checked:after {
+  content: '';
+  position: absolute;
+  width: 12rpx;
+  height: 20rpx;
+  border-right: 4rpx solid #fff;
+  border-bottom: 4rpx solid #fff;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
 .card-info {
   display: flex;
   flex-direction: column;
@@ -92,3 +200,38 @@ view, text {
 .card-tag.image { background-color: #fff7e6; color: #fa8c16; }
 
 .empty-state { margin-top: 200rpx; text-align: center; color: #ccc; font-size: 30rpx; }
+
+.action-bar {
+  position: fixed;
+  left: 30rpx;
+  right: 30rpx;
+  bottom: 30rpx;
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 20rpx;
+  display: flex;
+  gap: 20rpx;
+  box-shadow: 0 10rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+.action-btn {
+  flex: 1;
+  height: 80rpx;
+  border-radius: 40rpx;
+  background: #FA7298;
+  color: #ffffff;
+  font-size: 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-btn {
+  background: #ffffff;
+  color: #FA7298;
+  border: 2rpx solid #FA7298;
+}
+
+.action-btn.disabled {
+  opacity: 0.4;
+}
