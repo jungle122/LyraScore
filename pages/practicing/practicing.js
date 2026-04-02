@@ -184,7 +184,8 @@ Page({
   onShareAppMessage() {
     return {
       title: '我正在用 Lyra吉他谱本 练琴，太好用了！🎸',
-      path: '/pages/practicing/practicing'
+      path: '/pages/practicing/practicing',
+      imageUrl: '/images/icon.png'
     }
   },
 
@@ -192,7 +193,8 @@ Page({
   onShareTimeline() {
     return {
       title: 'Lyra吉他谱本：吉他手的私人云端琴房☁️',
-      query: 'from=timeline'
+      query: 'from=timeline',
+      imageUrl: '/images/icon.png'
     }
   },
 
