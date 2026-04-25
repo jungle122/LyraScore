@@ -24,14 +24,14 @@
     <!-- A. 如果有输入，且有结果 -->
     <block wx:if="{{keyword.length > 0 && resultList.length > 0}}">
       <view class="section-header">搜索结果</view>
-      <block wx:for="{{resultList}}" wx:key="id">
+      <block wx:for="{{resultList}}" wx:key="_id">
         <view class="song-card" bindtap="goToDetail" data-id="{{item.id}}">
           <view class="card-info">
             <!-- 这里我们可以做一个小亮点：高亮匹配的文字 (暂时先不做，保持简单) -->
             <text class="song-title">{{item.title}}</text>
             <text class="song-artist" wx:if="{{item.artist}}">{{item.artist}}</text>
             <text class="song-meta">
-               {{item.status === 'practicing' ? '🔥 正在练' : (item.status === 'finished' ? '✅ 已练完' : '🗑️ 回收站')}}
+              {{item.statusText}}
             </text>
           </view>
           <view class="card-tag {{item.type}}">

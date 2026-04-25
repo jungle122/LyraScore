@@ -1,6 +1,44 @@
 const db = wx.cloud.database();
 const _ = db.command;
 
+function normalizeStatus(status) {
+  if (!status) return 'practicing';
+
+  const value = String(status).toLowerCase().trim();
+  if (
+    value === 'practicing' ||
+    value === 'practising' ||
+    value === 'in_progress' ||
+    value === 'ongoing' ||
+    value === '正在练' ||
+    value === '练习中'
+  ) {
+    return 'practicing';
+  }
+
+  if (
+    value === 'finished' ||
+    value === 'completed' ||
+    value === 'done' ||
+    value === '已练完' ||
+    value === '已完成'
+  ) {
+    return 'finished';
+  }
+
+  if (value === 'deleted' || value === 'trash' || value === '已删除') {
+    return 'deleted';
+  }
+
+  return 'practicing';
+}
+
+function statusText(status) {
+  if (status === 'finished') return '✅ 已练完';
+  if (status === 'deleted') return '🗑️ 回收站';
+  return '🔥 正在练';
+}
+
 Page({
   data: {
     keyword: '',
@@ -37,8 +75,19 @@ Page({
         }
       ]
     }).get().then(res => {
+      const normalizedList = res.data
+        .map(item => {
+          const statusNormalized = normalizeStatus(item.status);
+          return {
+            ...item,
+            statusNormalized,
+            statusText: statusText(statusNormalized)
+          };
+        })
+        .filter(item => item.statusNormalized !== 'deleted');
+
       this.setData({
-        resultList: res.data
+        resultList: normalizedList
       });
     }).catch(err => {
       console.error('搜索失败:', err);

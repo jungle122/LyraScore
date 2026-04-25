@@ -1,5 +1,60 @@
 // 1. 初始化云数据库
 const db = wx.cloud.database();
+const PAGE_SIZE = 100;
+
+function normalizeStatus(status) {
+  if (!status) return 'practicing';
+
+  const value = String(status).toLowerCase().trim();
+  if (
+    value === 'practicing' ||
+    value === 'practising' ||
+    value === 'in_progress' ||
+    value === 'ongoing' ||
+    value === '正在练' ||
+    value === '练习中'
+  ) {
+    return 'practicing';
+  }
+
+  if (
+    value === 'finished' ||
+    value === 'completed' ||
+    value === 'done' ||
+    value === '已练完' ||
+    value === '已完成'
+  ) {
+    return 'finished';
+  }
+
+  if (value === 'deleted' || value === 'trash' || value === '已删除') {
+    return 'deleted';
+  }
+
+  return 'practicing';
+}
+
+function normalizeInstrument(value) {
+  if (!value) return '';
+  const text = String(value).toLowerCase().trim();
+  if (text === '吉他' || text === 'guitar') return 'guitar';
+  if (text === '尤克里里' || text === 'ukulele') return 'ukulele';
+  return '';
+}
+
+function normalizeStyle(value) {
+  if (!value) return '';
+  const text = String(value).toLowerCase().trim();
+  if (text === '弹唱' || text === 'fingerstyle') return 'fingerstyle';
+  if (text === '指弹' || text === 'picking') return 'picking';
+  return '';
+}
+
+function toSortableNumber(value) {
+  if (typeof value === 'number' && !isNaN(value)) return value;
+  const parsed = Number(value);
+  return isNaN(parsed) ? 0 : parsed;
+}
 
 Page({
   data: {
@@ -12,50 +67,63 @@ Page({
   },
 
   onShow() {
+    this.setData({
+      selectedInstrument: 'all',
+      selectedStyle: 'all'
+    });
     this.loadFinishedSongs();
+  },
+
+  fetchAllByQuery(query, skip = 0, list = []) {
+    return query
+      .skip(skip)
+      .limit(PAGE_SIZE)
+      .get()
+      .then(res => {
+        const merged = list.concat(res.data);
+        if (res.data.length < PAGE_SIZE) {
+          return merged;
+        }
+        return this.fetchAllByQuery(query, skip + PAGE_SIZE, merged);
+      });
   },
 
   loadFinishedSongs() {
     wx.showLoading({ title: '加载中...' });
 
-    let whereCondition = { status: 'finished' };
+    const query = db.collection('songs').orderBy('_id', 'asc');
 
-    // 乐器筛选条件
-    if (this.data.selectedInstrument !== 'all') {
-      const instrumentMap = {
-        'guitar': '吉他',
-        'ukulele': '尤克里里'
-      };
-      const instrumentValue = instrumentMap[this.data.selectedInstrument];
-      whereCondition.instrument = instrumentValue;
-    }
+    this.fetchAllByQuery(query)
+      .then(allRows => {
+        let finishedSongs = allRows.filter(item => {
+          const status = normalizeStatus(item.status);
+          if (status === 'deleted' || status !== 'finished') return false;
 
-    // 风格筛选条件
-    if (this.data.selectedStyle !== 'all') {
-      const styleMap = {
-        'fingerstyle': '弹唱',
-        'picking': '指弹'
-      };
-      const styleValue = styleMap[this.data.selectedStyle];
-      whereCondition.style = styleValue;
-    }
+          if (this.data.selectedInstrument !== 'all') {
+            const instrument = normalizeInstrument(item.instrument);
+            if (instrument !== this.data.selectedInstrument) return false;
+          }
 
-    let query = db.collection('songs').where(whereCondition);
+          if (this.data.selectedStyle !== 'all') {
+            const style = normalizeStyle(item.style);
+            if (style !== this.data.selectedStyle) return false;
+          }
 
-    // 排序条件
-    if (this.data.selectedSort === 'newest') {
-      query = query.orderBy('id', 'desc');
-    } else if (this.data.selectedSort === 'oldest') {
-      query = query.orderBy('id', 'asc');
-    } else if (this.data.selectedSort === 'name') {
-      query = query.orderBy('title', 'asc');
-    }
+          return true;
+        });
 
-    query.get()
-      .then(res => {
-        console.log('已练完列表获取成功:', res.data);
+        // 在前端做排序，避免云端排序字段缺失导致的不稳定行为
+        if (this.data.selectedSort === 'newest') {
+          finishedSongs.sort((a, b) => toSortableNumber(b.id) - toSortableNumber(a.id));
+        } else if (this.data.selectedSort === 'oldest') {
+          finishedSongs.sort((a, b) => toSortableNumber(a.id) - toSortableNumber(b.id));
+        } else if (this.data.selectedSort === 'name') {
+          finishedSongs.sort((a, b) => String(a.title || '').localeCompare(String(b.title || ''), 'zh-Hans-CN'));
+        }
+
+        console.log('已练完列表获取成功:', finishedSongs);
         this.setData({
-          songList: res.data
+          songList: finishedSongs
         });
         wx.hideLoading();
       })

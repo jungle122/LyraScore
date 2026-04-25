@@ -45,7 +45,7 @@
 
   <!-- 列表结构完全复用 -->
   <view class="song-list">
-    <block wx:for="{{songList}}" wx:key="id">
+    <block wx:for="{{songList}}" wx:key="_id">
       <view class="song-card" bindtap="onCardTap" data-id="{{item.id}}" data-uid="{{item._id}}">
         <view class="select-circle {{utils.isSelected(selectedIds, item._id) ? 'checked' : ''}}" wx:if="{{isEditMode}}" catchtap="toggleSelectItem" data-uid="{{item._id}}"></view>
         <view class="card-info">

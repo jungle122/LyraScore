@@ -44,7 +44,7 @@
   </view>
 
   <view class="song-list">
-    <block wx:for="{{songList}}" wx:key="id">
+    <block wx:for="{{songList}}" wx:key="_id">
       
       <!-- 回归最简单的卡片，点击直接跳转 -->
       <view class="song-card" bindtap="onCardTap" data-id="{{item.id}}" data-uid="{{item._id}}">
