@@ -1,5 +1,7 @@
 const db = wx.cloud.database(); // ✨ 初始化云数据库
-const PAGE_SIZE = 100;
+// ⚠️ 小程序端 .get() 单次最多返回 20 条，PAGE_SIZE 必须 = 20，
+// 否则会把"返回数 < PAGE_SIZE"误判为已到末页，导致只加载 20 条。
+const PAGE_SIZE = 20;
 
 function normalizeStatus(status) {
   if (!status) return 'practicing';

@@ -1,5 +1,7 @@
 const db = wx.cloud.database();
 const _ = db.command;
+// ⚠️ 小程序端 .get() 单次最多返回 20 条，搜索也必须翻页，否则结果最多只出 20 条。
+const PAGE_SIZE = 20;
 
 function normalizeStatus(status) {
   if (!status) return 'practicing';
@@ -45,6 +47,20 @@ Page({
     resultList: []
   },
 
+  fetchAllByQuery(query, skip = 0, list = []) {
+    return query
+      .skip(skip)
+      .limit(PAGE_SIZE)
+      .get()
+      .then(res => {
+        const merged = list.concat(res.data);
+        if (res.data.length < PAGE_SIZE) {
+          return merged;
+        }
+        return this.fetchAllByQuery(query, skip + PAGE_SIZE, merged);
+      });
+  },
+
   onSearchInput(e) {
     const val = e.detail.value;
     this.setData({ keyword: val });
@@ -56,7 +72,7 @@ Page({
     }
 
     // ✨ 核心逻辑：排除回收站 + 双字段模糊搜索
-    db.collection('songs').where({
+    const query = db.collection('songs').where({
       // 条件1：排除已删除的记录（status !== 'deleted'）
       status: _.neq('deleted'),
       // 条件2：同时对 title 和 artist 进行包含匹配（$or 逻辑）
@@ -74,8 +90,13 @@ Page({
           })
         }
       ]
-    }).get().then(res => {
-      const normalizedList = res.data
+    });
+
+    // 翻页拉全部匹配结果（单次 get 最多 20 条）
+    this.fetchAllByQuery(query).then(rows => {
+      // 用户可能在请求返回前又改了关键词，丢弃过期结果
+      if (this.data.keyword !== val) return;
+      const normalizedList = rows
         .map(item => {
           const statusNormalized = normalizeStatus(item.status);
           return {

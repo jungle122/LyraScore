@@ -1,3 +1,5 @@
+const localStore = require('../../utils/localStore.js');
+
 Page({
   data: {
     counts: {
@@ -198,6 +200,99 @@ Page({
       skip += PAGE_SIZE;
     }
     return all;
+  },
+
+  // --- 一键迁移：把云端 songs + 所有 cloud:// 文件落到「这部手机」的本地存储 ---
+  // 跑完后曲谱信息进 wx.setStorage，图片/PDF 进 USER_DATA_PATH/lyra-files，
+  // 之后 App 就可以彻底读写本地、不再依赖云开发。请在新手机上运行。
+  async migrateToLocal() {
+    const existing = localStore.getAllSongs();
+    const warn = existing.length
+      ? `\n\n⚠️ 本地已有 ${existing.length} 首，继续将「覆盖」本地数据。`
+      : '';
+
+    const ok = await new Promise(resolve => {
+      wx.showModal({
+        title: '迁移到本地',
+        content: `将把云端全部曲谱与图片/PDF 下载到这部手机的本地存储，之后即可不再使用云开发。请在你常用的手机上操作。${warn}`,
+        confirmText: '开始迁移',
+        confirmColor: '#FA7298',
+        success: resolve
+      });
+    });
+    if (!ok.confirm) return;
+
+    wx.showLoading({ title: '拉取曲谱列表...', mask: true });
+
+    try {
+      const allSongs = await this.fetchAllSongs();
+
+      // 统计需要下载的云端文件总数，便于显示进度
+      let totalFiles = 0;
+      allSongs.forEach(s => {
+        if (Array.isArray(s.imagePaths)) totalFiles += s.imagePaths.filter(p => p && p.startsWith('cloud://')).length;
+        if (Array.isArray(s.filePaths)) totalFiles += s.filePaths.filter(p => p && p.startsWith('cloud://')).length;
+        if (s.imagePath && s.imagePath.startsWith('cloud://')) totalFiles += 1;
+      });
+
+      let done = 0;
+      const failed = [];
+
+      // 下载单个 cloud:// 文件到本地，返回本地路径；失败则保留原 cloud 路径
+      const pullOne = async (cloudPath) => {
+        const ext = (decodeURIComponent(cloudPath).split('.').pop() || 'dat').split('?')[0];
+        try {
+          const res = await wx.cloud.downloadFile({ fileID: cloudPath });
+          const localPath = localStore.saveTempFile(res.tempFilePath, ext);
+          done += 1;
+          wx.showLoading({ title: `下载文件 ${done}/${totalFiles}`, mask: true });
+          return localPath;
+        } catch (err) {
+          console.error('下载失败:', cloudPath, err);
+          failed.push(cloudPath);
+          return cloudPath;
+        }
+      };
+
+      const mapPaths = async (arr) => {
+        if (!Array.isArray(arr)) return arr;
+        const out = [];
+        for (const p of arr) {
+          out.push(p && p.startsWith('cloud://') ? await pullOne(p) : p);
+        }
+        return out;
+      };
+
+      for (const song of allSongs) {
+        song.imagePaths = await mapPaths(song.imagePaths);
+        song.filePaths = await mapPaths(song.filePaths);
+        if (song.imagePath && song.imagePath.startsWith('cloud://')) {
+          song.imagePath = await pullOne(song.imagePath);
+        }
+        // 确保每条都有本地用的 _id（沿用云端 _id，没有则按 id 生成）
+        if (!song._id) song._id = `local_${song.id || Date.now()}_${Math.floor(Math.random() * 100000)}`;
+      }
+
+      localStore.saveAllSongs(allSongs);
+
+      wx.hideLoading();
+      wx.showModal({
+        title: '迁移完成 🎉',
+        content: `已存入本地 ${allSongs.length} 首曲谱，下载 ${done}/${totalFiles} 个文件${failed.length ? `，失败 ${failed.length} 个（已记入控制台）` : ''}。\n\n数据现已在这部手机本地。下一步可切换 App 读写本地。`,
+        showCancel: false,
+        confirmText: '好的',
+        confirmColor: '#FA7298'
+      });
+      if (failed.length) console.warn('未能下载的 cloud 路径：', failed);
+    } catch (err) {
+      wx.hideLoading();
+      console.error('迁移失败:', err);
+      wx.showModal({
+        title: '迁移失败',
+        content: String((err && err.errMsg) || (err && err.message) || err),
+        showCancel: false
+      });
+    }
   },
 
   // 关于
