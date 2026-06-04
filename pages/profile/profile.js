@@ -93,6 +93,113 @@ Page({
     wx.navigateTo({ url: '/pages/metronome/metronome' });
   },
 
+  // --- 一次性导出：把云端 songs + 所有 cloud:// 文件落到本地硬盘 ---
+  async exportAll() {
+    const ok = await new Promise(resolve => {
+      wx.showModal({
+        title: '导出全部数据',
+        content: '将拉取全部曲谱与图片/PDF。请在“微信开发者工具”里点这个按钮（不要在真机上点），导出位置是工具的 USER_DATA_PATH/lyra-export 文件夹。',
+        confirmText: '开始',
+        confirmColor: '#FA7298',
+        success: resolve
+      });
+    });
+    if (!ok.confirm) return;
+
+    wx.showLoading({ title: '拉取曲谱列表...', mask: true });
+
+    try {
+      const allSongs = await this.fetchAllSongs();
+
+      const fs = wx.getFileSystemManager();
+      const baseDir = `${wx.env.USER_DATA_PATH}/lyra-export`;
+      const filesDir = `${baseDir}/files`;
+      try { fs.mkdirSync(baseDir, true); } catch (e) {}
+      try { fs.mkdirSync(filesDir, true); } catch (e) {}
+
+      let totalFiles = 0;
+      allSongs.forEach(s => {
+        if (Array.isArray(s.imagePaths)) totalFiles += s.imagePaths.filter(p => p && p.startsWith('cloud://')).length;
+        if (Array.isArray(s.filePaths)) totalFiles += s.filePaths.filter(p => p && p.startsWith('cloud://')).length;
+        if (s.imagePath && s.imagePath.startsWith('cloud://')) totalFiles += 1;
+      });
+
+      let done = 0;
+      const failed = [];
+
+      const downloadOne = async (cloudPath) => {
+        const filename = decodeURIComponent(cloudPath.split('/').pop() || `unknown-${Date.now()}`);
+        const localPath = `${filesDir}/${filename}`;
+        try { fs.accessSync(localPath); return `files/${filename}`; } catch (e) {}
+        try {
+          const res = await wx.cloud.downloadFile({ fileID: cloudPath });
+          fs.copyFileSync(res.tempFilePath, localPath);
+          done += 1;
+          wx.showLoading({ title: `下载文件 ${done}/${totalFiles}`, mask: true });
+          return `files/${filename}`;
+        } catch (err) {
+          console.error('下载失败:', cloudPath, err);
+          failed.push(cloudPath);
+          return cloudPath; // 保留原路径，便于事后排查
+        }
+      };
+
+      const mapPaths = async (arr) => {
+        if (!Array.isArray(arr)) return arr;
+        const out = [];
+        for (const p of arr) {
+          out.push(p && p.startsWith('cloud://') ? await downloadOne(p) : p);
+        }
+        return out;
+      };
+
+      for (const song of allSongs) {
+        song.imagePaths = await mapPaths(song.imagePaths);
+        song.filePaths = await mapPaths(song.filePaths);
+        if (song.imagePath && song.imagePath.startsWith('cloud://')) {
+          song.imagePath = await downloadOne(song.imagePath);
+        }
+      }
+
+      const jsonPath = `${baseDir}/songs.json`;
+      fs.writeFileSync(jsonPath, JSON.stringify(allSongs, null, 2), 'utf8');
+
+      wx.hideLoading();
+
+      wx.showModal({
+        title: '导出完成 🎉',
+        content: `共 ${allSongs.length} 首曲谱，下载 ${done}/${totalFiles} 个文件${failed.length ? `，失败 ${failed.length} 个（已记入控制台）` : ''}。\n\n位置：${baseDir}\n\n在微信开发者工具菜单：设置 → 通用设置 → 文件位置，找到“用户数据目录”，进入 lyra-export 即可。`,
+        showCancel: false,
+        confirmText: '好的'
+      });
+      if (failed.length) console.warn('未能下载的 cloud 路径：', failed);
+    } catch (err) {
+      wx.hideLoading();
+      console.error('导出失败:', err);
+      wx.showModal({
+        title: '导出失败',
+        content: String((err && err.errMsg) || (err && err.message) || err),
+        showCancel: false
+      });
+    }
+  },
+
+  async fetchAllSongs() {
+    // ⚠️ 小程序端 .get() 单次最多返回 20 条，与 .limit() 写多少无关
+    const PAGE_SIZE = 20;
+    const db = wx.cloud.database();
+    let all = [];
+    let skip = 0;
+    while (true) {
+      const res = await db.collection('songs').orderBy('_id', 'asc').skip(skip).limit(PAGE_SIZE).get();
+      all = all.concat(res.data);
+      wx.showLoading({ title: `拉取曲谱 ${all.length}...`, mask: true });
+      if (res.data.length < PAGE_SIZE) break;
+      skip += PAGE_SIZE;
+    }
+    return all;
+  },
+
   // 关于
   showAbout() {
     wx.showModal({
