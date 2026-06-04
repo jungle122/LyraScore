@@ -158,16 +158,9 @@ Page({
     wx.previewImage({ current: currentUrl, urls: this.data.imagePaths });
   },
 
-  async previewFile(e) {
+  previewFile(e) {
     const path = e.currentTarget.dataset.path;
-    let filePath = path;
-
-    if (path.startsWith('cloud://')) {
-      const res = await wx.cloud.downloadFile({ fileID: path });
-      filePath = res.tempFilePath;
-    }
-
-    wx.openDocument({ filePath: filePath });
+    wx.openDocument({ filePath: path });
   },
 
   // --- ✨ 核心逻辑 2：保存 (上传图片 + 写入数据库) ---
