@@ -1,7 +1,5 @@
-const db = wx.cloud.database();
-const _ = db.command;
-// ⚠️ 小程序端 .get() 单次最多返回 20 条，搜索也必须翻页，否则结果最多只出 20 条。
-const PAGE_SIZE = 20;
+// 已从云端迁移到本机，改读本地数据层
+const localStore = require('../../utils/localStore.js');
 
 function normalizeStatus(status) {
   if (!status) return 'practicing';
@@ -47,73 +45,35 @@ Page({
     resultList: []
   },
 
-  fetchAllByQuery(query, skip = 0, list = []) {
-    return query
-      .skip(skip)
-      .limit(PAGE_SIZE)
-      .get()
-      .then(res => {
-        const merged = list.concat(res.data);
-        if (res.data.length < PAGE_SIZE) {
-          return merged;
-        }
-        return this.fetchAllByQuery(query, skip + PAGE_SIZE, merged);
-      });
-  },
-
   onSearchInput(e) {
     const val = e.detail.value;
     this.setData({ keyword: val });
 
-    // 性能优化：keyword 为空时直接清空结果，不请求数据库
+    // keyword 为空时直接清空结果
     if (!val) {
       this.setData({ resultList: [] });
       return;
     }
 
-    // ✨ 核心逻辑：排除回收站 + 双字段模糊搜索
-    const query = db.collection('songs').where({
-      // 条件1：排除已删除的记录（status !== 'deleted'）
-      status: _.neq('deleted'),
-      // 条件2：同时对 title 和 artist 进行包含匹配（$or 逻辑）
-      $or: [
-        {
-          title: db.RegExp({
-            regexp: val,
-            options: 'i',  // 不区分大小写
-          })
-        },
-        {
-          artist: db.RegExp({
-            regexp: val,
-            options: 'i',  // 不区分大小写
-          })
-        }
-      ]
-    });
-
-    // 翻页拉全部匹配结果（单次 get 最多 20 条）
-    this.fetchAllByQuery(query).then(rows => {
-      // 用户可能在请求返回前又改了关键词，丢弃过期结果
-      if (this.data.keyword !== val) return;
-      const normalizedList = rows
-        .map(item => {
-          const statusNormalized = normalizeStatus(item.status);
-          return {
-            ...item,
-            statusNormalized,
-            statusText: statusText(statusNormalized)
-          };
-        })
-        .filter(item => item.statusNormalized !== 'deleted');
-
-      this.setData({
-        resultList: normalizedList
+    // 本地过滤：排除回收站 + 对 title / artist 做不区分大小写的包含匹配
+    const lower = val.toLowerCase();
+    const normalizedList = localStore.getAllSongs()
+      .map(item => {
+        const statusNormalized = normalizeStatus(item.status);
+        return {
+          ...item,
+          statusNormalized,
+          statusText: statusText(statusNormalized)
+        };
+      })
+      .filter(item => {
+        if (item.statusNormalized === 'deleted') return false;
+        const title = String(item.title || '').toLowerCase();
+        const artist = String(item.artist || '').toLowerCase();
+        return title.includes(lower) || artist.includes(lower);
       });
-    }).catch(err => {
-      console.error('搜索失败:', err);
-      wx.showToast({ title: '搜索失败', icon: 'none' });
-    });
+
+    this.setData({ resultList: normalizedList });
   },
 
   clearSearch() {

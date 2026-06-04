@@ -1,8 +1,5 @@
-// 1. 初始化云数据库
-const db = wx.cloud.database();
-// ⚠️ 小程序端 .get() 单次最多返回 20 条，PAGE_SIZE 必须 = 20，
-// 否则会把"返回数 < PAGE_SIZE"误判为已到末页，导致只加载 20 条。
-const PAGE_SIZE = 20;
+// 已从云端迁移到本机，改读写本地数据层，不再使用 wx.cloud.database()
+const localStore = require('../../utils/localStore.js');
 
 function normalizeStatus(status) {
   if (!status) return 'practicing';
@@ -76,63 +73,35 @@ Page({
     this.loadFinishedSongs();
   },
 
-  fetchAllByQuery(query, skip = 0, list = []) {
-    return query
-      .skip(skip)
-      .limit(PAGE_SIZE)
-      .get()
-      .then(res => {
-        const merged = list.concat(res.data);
-        if (res.data.length < PAGE_SIZE) {
-          return merged;
-        }
-        return this.fetchAllByQuery(query, skip + PAGE_SIZE, merged);
-      });
-  },
-
   loadFinishedSongs() {
-    wx.showLoading({ title: '加载中...' });
+    const allRows = localStore.getAllSongs();
+    let finishedSongs = allRows.filter(item => {
+      const status = normalizeStatus(item.status);
+      if (status === 'deleted' || status !== 'finished') return false;
 
-    const query = db.collection('songs').orderBy('_id', 'asc');
+      if (this.data.selectedInstrument !== 'all') {
+        const instrument = normalizeInstrument(item.instrument);
+        if (instrument !== this.data.selectedInstrument) return false;
+      }
 
-    this.fetchAllByQuery(query)
-      .then(allRows => {
-        let finishedSongs = allRows.filter(item => {
-          const status = normalizeStatus(item.status);
-          if (status === 'deleted' || status !== 'finished') return false;
+      if (this.data.selectedStyle !== 'all') {
+        const style = normalizeStyle(item.style);
+        if (style !== this.data.selectedStyle) return false;
+      }
 
-          if (this.data.selectedInstrument !== 'all') {
-            const instrument = normalizeInstrument(item.instrument);
-            if (instrument !== this.data.selectedInstrument) return false;
-          }
+      return true;
+    });
 
-          if (this.data.selectedStyle !== 'all') {
-            const style = normalizeStyle(item.style);
-            if (style !== this.data.selectedStyle) return false;
-          }
+    // 前端排序
+    if (this.data.selectedSort === 'newest') {
+      finishedSongs.sort((a, b) => toSortableNumber(b.id) - toSortableNumber(a.id));
+    } else if (this.data.selectedSort === 'oldest') {
+      finishedSongs.sort((a, b) => toSortableNumber(a.id) - toSortableNumber(b.id));
+    } else if (this.data.selectedSort === 'name') {
+      finishedSongs.sort((a, b) => String(a.title || '').localeCompare(String(b.title || ''), 'zh-Hans-CN'));
+    }
 
-          return true;
-        });
-
-        // 在前端做排序，避免云端排序字段缺失导致的不稳定行为
-        if (this.data.selectedSort === 'newest') {
-          finishedSongs.sort((a, b) => toSortableNumber(b.id) - toSortableNumber(a.id));
-        } else if (this.data.selectedSort === 'oldest') {
-          finishedSongs.sort((a, b) => toSortableNumber(a.id) - toSortableNumber(b.id));
-        } else if (this.data.selectedSort === 'name') {
-          finishedSongs.sort((a, b) => String(a.title || '').localeCompare(String(b.title || ''), 'zh-Hans-CN'));
-        }
-
-        console.log('已练完列表获取成功:', finishedSongs);
-        this.setData({
-          songList: finishedSongs
-        });
-        wx.hideLoading();
-      })
-      .catch(err => {
-        console.error('云端获取失败:', err);
-        wx.hideLoading();
-      });
+    this.setData({ songList: finishedSongs });
   },
 
   onFilterChange(e) {
@@ -219,11 +188,9 @@ Page({
 
     wx.showLoading({ title: '处理中...' });
     try {
-      await Promise.all(this.data.selectedIds.map(id =>
-        db.collection('songs').doc(id).update({
-          data: { status: 'deleted', deleteDate: Date.now() }
-        })
-      ));
+      this.data.selectedIds.forEach(id =>
+        localStore.updateSong(id, { status: 'deleted', deleteDate: Date.now() })
+      );
       wx.showToast({ title: '已删除', icon: 'success' });
       this.setData({ isEditMode: false, selectedIds: [] });
       this.loadFinishedSongs();
@@ -243,11 +210,9 @@ Page({
 
     wx.showLoading({ title: '处理中...' });
     try {
-      await Promise.all(this.data.selectedIds.map(id =>
-        db.collection('songs').doc(id).update({
-          data: { status: 'practicing', deleteDate: null }
-        })
-      ));
+      this.data.selectedIds.forEach(id =>
+        localStore.updateSong(id, { status: 'practicing', deleteDate: null })
+      );
       wx.showToast({ title: '已移动', icon: 'success' });
       this.setData({ isEditMode: false, selectedIds: [] });
       this.loadFinishedSongs();

@@ -1,4 +1,5 @@
-const db = wx.cloud.database();
+// 已从云端迁移到本机，改读写本地数据层
+const localStore = require('../../utils/localStore.js');
 
 Page({
   data: {
@@ -10,33 +11,26 @@ Page({
   },
 
   loadTrashFromCloud() {
-    wx.showLoading({ title: '加载中...' });
-    db.collection('songs').where({
-      status: 'deleted' // 只查回收站里的
-    }).get().then(res => {
-      wx.hideLoading();
-      // 计算剩余天数 (逻辑不变)
-      const list = res.data.map(song => {
+    // 计算剩余天数 (逻辑不变)
+    const list = localStore.getAllSongs()
+      .filter(song => song.status === 'deleted')
+      .map(song => {
         const diff = Date.now() - (song.deleteDate || Date.now());
         let daysLeft = 30 - Math.floor(diff / (24 * 60 * 60 * 1000));
         return { ...song, daysLeft: daysLeft < 0 ? 0 : daysLeft };
       });
-      this.setData({ trashList: list });
-    });
+    this.setData({ trashList: list });
   },
 
   // 恢复歌曲
   recoverSong(e) {
-    const _id = e.currentTarget.dataset.id; // 云开发用 _id
-    db.collection('songs').doc(_id).update({
-      data: { status: 'practicing', deleteDate: null }
-    }).then(() => {
-      wx.showToast({ title: '已恢复' });
-      this.loadTrashFromCloud();
-    });
+    const _id = e.currentTarget.dataset.id;
+    localStore.updateSong(_id, { status: 'practicing', deleteDate: null });
+    wx.showToast({ title: '已恢复' });
+    this.loadTrashFromCloud();
   },
 
-  // 彻底删除
+  // 彻底删除（连带删掉本地图片/PDF 文件）
   deleteForever(e) {
     const _id = e.currentTarget.dataset.id;
     wx.showModal({
@@ -44,10 +38,9 @@ Page({
       content: '无法找回，确定吗？',
       success: (res) => {
         if (res.confirm) {
-          db.collection('songs').doc(_id).remove().then(() => {
-            wx.showToast({ title: '已销毁' });
-            this.loadTrashFromCloud();
-          });
+          localStore.removeSong(_id);
+          wx.showToast({ title: '已销毁' });
+          this.loadTrashFromCloud();
         }
       }
     });

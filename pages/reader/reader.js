@@ -1,4 +1,5 @@
-const db = wx.cloud.database();
+// 已从云端迁移到本机，改读写本地数据层
+const localStore = require('../../utils/localStore.js');
 
 Page({
   data: {
@@ -161,25 +162,18 @@ Page({
 
   // --- 业务逻辑：加载歌曲 ---
   loadSongFromCloud(id) {
-    wx.showLoading({ title: '加载中...' });
-    db.collection('songs').where({ id: id }).get().then(res => {
-      wx.hideLoading();
-      if (res.data.length > 0) {
-        const targetSong = res.data[0];
-        // 兼容图片数组
-        if (!targetSong.imagePaths && targetSong.imagePath) {
-          targetSong.imagePaths = [targetSong.imagePath];
-        }
-        this.setData({
-          song: targetSong,
-          currentBpm: targetSong.bpm || 90
-        });
-        wx.setNavigationBarTitle({ title: targetSong.title });
+    const targetSong = localStore.getSongById(id);
+    if (targetSong) {
+      // 兼容图片数组
+      if (!targetSong.imagePaths && targetSong.imagePath) {
+        targetSong.imagePaths = [targetSong.imagePath];
       }
-    }).catch(err => {
-      wx.hideLoading();
-      console.error(err);
-    });
+      this.setData({
+        song: targetSong,
+        currentBpm: targetSong.bpm || 90
+      });
+      wx.setNavigationBarTitle({ title: targetSong.title });
+    }
   },
 
   // --- 业务逻辑：菜单与状态 ---
@@ -228,15 +222,12 @@ Page({
   },
 
   updateStatus(newStatus, toastMsg) {
-    db.collection('songs').doc(this.data.song._id).update({
-      data: {
-        status: newStatus,
-        deleteDate: newStatus === 'deleted' ? Date.now() : null
-      }
-    }).then(() => {
-      wx.showToast({ title: toastMsg, icon: 'success' });
-      setTimeout(() => { wx.navigateBack(); }, 1200);
+    localStore.updateSong(this.data.song._id, {
+      status: newStatus,
+      deleteDate: newStatus === 'deleted' ? Date.now() : null
     });
+    wx.showToast({ title: toastMsg, icon: 'success' });
+    setTimeout(() => { wx.navigateBack(); }, 1200);
   },
 
   // 图片全屏预览
