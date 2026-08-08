@@ -95,11 +95,11 @@ Page({
     wx.navigateTo({ url: '/pages/metronome/metronome' });
   },
 
-  // --- 一次性导出：把云端 songs + 所有 cloud:// 文件落到本地硬盘 ---
+  // --- 数据备份：把云端 songs + 所有 cloud:// 文件保存到本地硬盘 ---
   async exportAll() {
     const ok = await new Promise(resolve => {
       wx.showModal({
-        title: '导出全部数据',
+        title: '备份全部数据到电脑',
         content: '将拉取全部曲谱与图片/PDF。请在“微信开发者工具”里点这个按钮（不要在真机上点），导出位置是工具的 USER_DATA_PATH/lyra-export 文件夹。',
         confirmText: '开始',
         confirmColor: '#FA7298',
@@ -169,7 +169,7 @@ Page({
       wx.hideLoading();
 
       wx.showModal({
-        title: '导出完成 🎉',
+        title: '备份完成 🎉',
         content: `共 ${allSongs.length} 首曲谱，下载 ${done}/${totalFiles} 个文件${failed.length ? `，失败 ${failed.length} 个（已记入控制台）` : ''}。\n\n位置：${baseDir}\n\n在微信开发者工具菜单：设置 → 通用设置 → 文件位置，找到“用户数据目录”，进入 lyra-export 即可。`,
         showCancel: false,
         confirmText: '好的'
@@ -177,9 +177,9 @@ Page({
       if (failed.length) console.warn('未能下载的 cloud 路径：', failed);
     } catch (err) {
       wx.hideLoading();
-      console.error('导出失败:', err);
+      console.error('备份失败:', err);
       wx.showModal({
-        title: '导出失败',
+        title: '备份失败',
         content: String((err && err.errMsg) || (err && err.message) || err),
         showCancel: false
       });
