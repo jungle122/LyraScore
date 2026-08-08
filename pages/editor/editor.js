@@ -1,5 +1,5 @@
-// 已从云端迁移到本机，改读写本地数据层
-const localStore = require('../../utils/localStore.js');
+// 初始化云数据库
+const db = wx.cloud.database();
 
 Page({
   data: {
@@ -38,35 +38,45 @@ Page({
 
   // --- ✨ 核心逻辑 1：从云端读取旧数据 ---
   loadSongFromCloud(id) {
-    // 按 id (时间戳) 从本地查
-    const song = localStore.getSongById(id);
-    if (song) {
-      // 兼容旧数据的图片格式
-      let paths = [];
-      if (song.imagePaths) paths = song.imagePaths;
-      else if (song.imagePath) paths = [song.imagePath];
+    wx.showLoading({ title: '加载中...' });
 
-      this.setData({
-        id: song.id,
-        _id: song._id, // ✨ 记下这个身份证，保存时要用
-        type: song.type,
-        title: song.title,
-        artist: song.artist || '',
-        key: song.key, originalKey: song.originalKey, capo: song.capo,
-        timeSignature: song.timeSignature, bpm: song.bpm, tuning: song.tuning,
-        content: song.content,
-        location: song.location,
-        imagePaths: paths,
-        filePaths: song.filePaths || [],
-        comment: song.comment || '',
-        instrument: song.instrument || '吉他', // 如果没有 instrument 字段，默认设为 '吉他'
-        style: song.style || '弹唱', // 如果没有 style 字段，默认设为 '弹唱'
-        status: song.status || 'practicing'
-      });
-      wx.setNavigationBarTitle({ title: '编辑乐谱' });
-    } else {
-      wx.showToast({ title: '未找到曲谱', icon: 'none' });
-    }
+    // 使用 where 查询，因为我们传过来的是 id (时间戳)，不是 _id
+    db.collection('songs').where({ id: id }).get().then(res => {
+      wx.hideLoading();
+      if (res.data.length > 0) {
+        const song = res.data[0];
+
+        // 兼容旧数据的图片格式
+        let paths = [];
+        if (song.imagePaths) paths = song.imagePaths;
+        else if (song.imagePath) paths = [song.imagePath];
+
+        this.setData({
+          id: song.id,
+          _id: song._id, // ✨ 记下这个云端身份证，保存时要用
+          type: song.type,
+          title: song.title,
+          artist: song.artist || '',
+          key: song.key, originalKey: song.originalKey, capo: song.capo,
+          timeSignature: song.timeSignature, bpm: song.bpm, tuning: song.tuning,
+          content: song.content,
+          location: song.location,
+          imagePaths: paths,
+          filePaths: song.filePaths || [],
+          comment: song.comment || '',
+          instrument: song.instrument || '吉他', // 如果没有 instrument 字段，默认设为 '吉他'
+          style: song.style || '弹唱', // 如果没有 style 字段，默认设为 '弹唱'
+          status: song.status || 'practicing'
+        });
+        wx.setNavigationBarTitle({ title: '编辑乐谱' });
+      } else {
+        wx.showToast({ title: '未找到曲谱', icon: 'none' });
+      }
+    }).catch(err => {
+      wx.hideLoading();
+      console.error('加载失败', err);
+      wx.showToast({ title: '加载出错', icon: 'none' });
+    });
   },
 
   setNavTitle(type) {
@@ -158,9 +168,16 @@ Page({
     wx.previewImage({ current: currentUrl, urls: this.data.imagePaths });
   },
 
-  previewFile(e) {
+  async previewFile(e) {
     const path = e.currentTarget.dataset.path;
-    wx.openDocument({ filePath: path });
+    let filePath = path;
+
+    if (path.startsWith('cloud://')) {
+      const res = await wx.cloud.downloadFile({ fileID: path });
+      filePath = res.tempFilePath;
+    }
+
+    wx.openDocument({ filePath: filePath });
   },
 
   // --- ✨ 核心逻辑 2：保存 (上传图片 + 写入数据库) ---
@@ -179,10 +196,10 @@ Page({
     wx.showLoading({ title: '正在保存...', mask: true });
 
     try {
-      // 2. 处理图片/PDF：把新选的本地临时文件复制进持久目录
-      //    （已经在本地持久目录里的，原样保留，不重复复制）
-      const finalImagePaths = this.saveImagesLocally();
-      const finalFilePaths = this.saveFilesLocally();
+      // 2. 处理图片上传 (关键步骤！)
+      // 只有那些还没上传的（不是 cloud:// 开头的）才需要上传
+      const finalImagePaths = await this.uploadAllImages();
+      const finalFilePaths = await this.uploadAllFiles();
 
       // 3. 准备数据对象
       const songData = {
@@ -200,22 +217,26 @@ Page({
         bpm: this.data.bpm, tuning: this.data.tuning,
         content: this.data.content,
         location: this.data.location,
-        imagePaths: finalImagePaths, // ✨ 本地文件路径
+        imagePaths: finalImagePaths, // ✨ 存入云端文件 ID
         filePaths: finalFilePaths,
-        comment: this.data.comment,
+        comment: this.data.comment, // ✨ 将备注存入云端
         instrument: this.data.instrument, // 存储乐器类型
         style: this.data.style // 存储风格类型
       };
 
-      // 4. 写入本地
+      // 4. 写入数据库
       if (this.data._id) {
         // --- 更新模式 (Update) ---
         // 注意：不要把 status 覆盖回 practicing，保持原样
-        localStore.updateSong(this.data._id, songData);
+        await db.collection('songs').doc(this.data._id).update({
+          data: songData
+        });
       } else {
         // --- 新建模式 (Add) ---
         songData.status = this.data.status || 'practicing';
-        localStore.addSong(songData);
+        await db.collection('songs').add({
+          data: songData
+        });
       }
 
       wx.hideLoading();
@@ -233,26 +254,48 @@ Page({
     }
   },
 
-  // --- 🛠️ 工具函数：把图片落到本地持久目录 ---
-  saveImagesLocally() {
-    return this.data.imagePaths.map(path => {
-      // 已经在本地持久目录、或仍是旧云端路径的，原样保留
-      if (path.indexOf(localStore.FILES_DIR) === 0 || path.startsWith('cloud://')) {
-        return path;
+  // --- 🛠️ 工具函数：批量上传图片 ---
+  uploadAllImages() {
+    const uploadTasks = this.data.imagePaths.map(path => {
+      // 如果已经是云端路径 (cloud://...)，直接返回，不用传
+      if (path.startsWith('cloud://')) {
+        return Promise.resolve(path);
       }
-      // 新选的临时文件，复制进本地目录
-      return localStore.saveTempFile(path, 'png');
+
+      // 如果是本地临时文件，需要上传
+      // 生成一个云端文件名: my_scores/时间戳_随机数.png
+      const cloudPath = `my_scores/${Date.now()}-${Math.floor(Math.random()*1000)}.png`;
+
+      return wx.cloud.uploadFile({
+        cloudPath: cloudPath,
+        filePath: path
+      }).then(res => {
+        return res.fileID; // 返回上传后的 cloudID
+      });
     });
+
+    // 等待所有图片都处理完
+    return Promise.all(uploadTasks);
   },
 
-  saveFilesLocally() {
-    return this.data.filePaths.map(path => {
-      if (path.indexOf(localStore.FILES_DIR) === 0 || path.startsWith('cloud://')) {
-        return path;
+  uploadAllFiles() {
+    const uploadTasks = this.data.filePaths.map(path => {
+      if (path.startsWith('cloud://')) {
+        return Promise.resolve(path);
       }
+
       const ext = path.split('.').pop() || 'pdf';
-      return localStore.saveTempFile(path, ext);
+      const cloudPath = `my_scores/files/${Date.now()}-${Math.floor(Math.random()*1000)}.${ext}`;
+
+      return wx.cloud.uploadFile({
+        cloudPath: cloudPath,
+        filePath: path
+      }).then(res => {
+        return res.fileID;
+      });
     });
+
+    return Promise.all(uploadTasks);
   },
   // 分享给朋友
   onShareAppMessage() {
