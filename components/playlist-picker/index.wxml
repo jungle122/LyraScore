@@ -1,0 +1,16 @@
+<view wx:if="{{visible}}" class="overlay" style="{{themeStyle}}" catchtap="close" catchtouchmove="noop">
+  <view class="sheet" catchtap="noop">
+    <view class="heading"><text>加入歌单</text><button class="plain" bindtap="close" disabled="{{busy || creating}}">关闭</button></view>
+    <text class="caption">已选 {{songIds.length}} 首曲谱 · 可选择多个歌单</text>
+    <button class="create" bindtap="create" disabled="{{busy || creating}}">{{creating ? '创建中…' : '＋ 新建歌单'}}</button>
+    <view wx:if="{{loading}}" class="message">正在加载歌单…</view>
+    <view wx:if="{{error}}" class="message"><text>{{error}}</text><button class="plain" bindtap="load" disabled="{{busy}}">重新加载</button></view>
+    <scroll-view scroll-y class="options">
+      <view wx:for="{{playlists}}" wx:key="_id" class="option {{item.selected ? 'selected' : ''}}" data-id="{{item._id}}" bindtap="toggle">
+        <view class="names"><text class="name">{{item.name}}</text><text class="caption">{{item.count}} 首曲谱</text></view><text class="check">{{item.selected ? '✓' : '○'}}</text>
+      </view>
+      <view wx:if="{{!loading && !error && !playlists.length}}" class="message">还没有歌单，先新建一个吧</view>
+    </scroll-view>
+    <button class="primary" bindtap="confirm" disabled="{{busy || loading || !selected.length}}">{{busy ? '正在加入…' : '加入选中的歌单'}}</button>
+  </view>
+</view>

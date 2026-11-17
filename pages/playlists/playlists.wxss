@@ -1,0 +1,4 @@
+@import "../../utils/songFilters.wxss";
+.container{padding:30rpx;padding-bottom:160rpx}
+
+.page-toolbar .button-primary{margin-left:auto;flex:0 0 220rpx}

@@ -1,0 +1,15 @@
+<page-meta page-style="background-color: {{pageBackground}};" />
+<view class="theme-root" style="{{themeStyle}}">
+  <view class="container">
+    <view wx:if="{{!loading && !error && playlists.length}}" class="page-toolbar"><text class="section-count">{{playlists.length}} 个歌单</text><button class="button-primary compact" bindtap="create" disabled="{{busy}}">新建歌单</button></view>
+    <view wx:if="{{error}}" class="feedback"><text>{{error}}</text><button bindtap="load">重试</button></view>
+    <view wx:if="{{cleanupId}}" class="feedback"><text>歌单已删除，部分关联尚待清理</text><button bindtap="retryCleanup" disabled="{{busy}}">重试清理</button></view>
+    <view wx:if="{{loading}}" class="feedback">正在加载歌单…</view>
+    <view class="playlist-card" wx:for="{{playlists}}" wx:key="_id" bindtap="open" data-id="{{item._id}}">
+      <view class="playlist-cover"><image src="/images/remix/playlist-{{themeIcon}}.png" /></view>
+      <view class="playlist-info"><text class="playlist-name">{{item.name}}</text><text class="muted">{{item.count}} 首曲谱</text></view>
+      <button class="icon-button" catchtap="menu" data-id="{{item._id}}" disabled="{{busy}}" aria-label="管理歌单"><image src="/images/remix/more-gray.png" /></button>
+    </view>
+    <view wx:if="{{!loading && !error && !playlists.length}}" class="blank-state"><image class="empty-icon" src="/images/remix/playlist-gray.png"/><text class="blank-title">把喜欢的曲谱整理在一起</text><text>按场景、风格或心情，新建你的第一份歌单</text><button class="button-primary" bindtap="create" disabled="{{busy}}">新建歌单</button></view>
+  </view>
+</view>

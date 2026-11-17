@@ -1,5 +1,5 @@
 page {
-  background-color: #ffffff;
+  background-color:var(--card-bg,#ffffff);
   display: flex;
   flex-direction: column;
   height: 100vh; /* 占满全屏高度 */
@@ -26,36 +26,36 @@ page {
 .bpm-display {
   text-align: center;
   /* 稍微给点宽度，防止输入框太窄点不到 */
-  min-width: 200rpx; 
+  min-width: 200rpx;
 }
 
 /* ✨ 新增：巨大的输入框样式 */
 .bpm-input {
   font-size: 90rpx; /* 保持原来的超大字号 */
   font-weight: bold;
-  color: #333;
+  color:var(--text-main,#333);
   height: 100rpx;   /* 高度要够，防止大字被切掉 */
   line-height: 100rpx;
   min-height: 100rpx;
   text-align: center; /* 文字居中 */
-  
+
   /* 去掉默认样式，让它融入背景 */
-  background: transparent;
-  border: none;
+  background:transparent;
+  border:none;
   font-family: monospace; /* 等宽字体，防止数字跳动 */
 }
 
 .bpm-value {
   font-size: 90rpx; /* 超大数字 */
   font-weight: bold;
-  color: #333;
+  color:var(--text-main,#333);
   display: block;
   line-height: 1;
 }
 
 .bpm-label {
   font-size: 28rpx;
-  color: #999;
+  color:var(--text-muted,#999);
   letter-spacing: 4rpx;
 }
 
@@ -63,22 +63,22 @@ page {
   width: 80rpx;
   height: 80rpx;
   /* 这句代码告诉布局引擎：无论中间的字多大，这两个按钮的宽度绝对不能缩水 */
-  flex-shrink: 0; 
-  border-radius: 50%;/* 变成正圆 */
-  border: 2rpx solid #e0e0e0;
+  flex-shrink: 0;
+  border-radius:50%;/* 变成正圆 */
+  border:2rpx solid var(--border,#e0e0e0);
   /* 居中对齐 */
   display: flex;
   align-items: center;
   justify-content: center;
 
   font-size: 50rpx;
-  color: #333;
-  background-color: #f9f9f9;
+  color:var(--text-main,#333);
+  background-color:var(--surface-bg,#f9f9f9);
 
   /* 稍微加个边距，防止贴太紧 */
   margin: 0 20rpx;
 }
-.bpm-btn:active { background-color: #eee; }
+.bpm-btn:active { background-color:var(--border,#eee); }
 
 /* 2. 播放大圆环 */
 .play-area {
@@ -90,8 +90,8 @@ page {
 .circle-ring {
   width: 400rpx;
   height: 400rpx;
-  border-radius: 50%;
-  border: 10rpx solid #333; /* 粗黑框 */
+  border-radius:50%;
+  border:10rpx solid var(--text-main,#333); /* 粗黑框 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -101,7 +101,7 @@ page {
 
 /* 播放时的呼吸动画 */
 .circle-ring.breathing {
-  border-color: #fa7298; /* 变粉 */
+  border-color:var(--primary); /* 变粉 */
   box-shadow: 0 0 40rpx rgba(250, 114, 152, 0.4);
   transform: scale(1.05);
 }
@@ -110,18 +110,19 @@ page {
 .play-icon.play {
   width: 0;
   height: 0;
-  border-style: solid;
-  border-width: 40rpx 0 40rpx 70rpx;
-  border-color: transparent transparent transparent #333;
-  margin-left: 10rpx; /* 视觉修正 */
+  border-style:solid;
+  border-width:40rpx 0 40rpx 70rpx;
+  border-color:transparent transparent transparent var(--text-main,#333);
+  margin-left: 0;
+  transform: translateX(12rpx); /* 三角形视觉重心略向右；暂停图标不偏移 */
 }
 
 /* 暂停图标 (两条竖线) */
 .play-icon.pause {
   width: 50rpx;
   height: 80rpx;
-  border-left: 16rpx solid #fa7298;
-  border-right: 16rpx solid #fa7298;
+  border-left:16rpx solid var(--primary);
+  border-right:16rpx solid var(--primary);
 }
 
 /* 3. 指示灯 */
@@ -134,13 +135,13 @@ page {
 .dot {
   width: 30rpx;
   height: 30rpx;
-  border-radius: 50%;
-  background-color: #e0e0e0; /* 默认灰 */
+  border-radius:50%;
+  background-color:var(--border,#e0e0e0); /* 默认灰 */
   transition: all 0.1s;
 }
 
 .dot.active {
-  background-color: #fa7298; /* 激活粉 */
+  background-color:var(--primary); /* 激活粉 */
   transform: scale(1.4);
 }
 
@@ -148,18 +149,26 @@ page {
 .ts-selector {
   text-align: center;
   padding: 20rpx 40rpx;
-  background-color: #f8f8f8;
-  border-radius: 40rpx;
+  background-color:var(--page-bg,#f8f8f8);
+  border-radius:40rpx;
 }
 
 .ts-value {
   font-size: 40rpx;
   font-weight: bold;
-  color: #333;
+  color:var(--text-main,#333);
   display: block;
 }
 
 .ts-label {
   font-size: 24rpx;
-  color: #999;
+  color:var(--text-muted,#999);
 }
+
+page{display:block;height:auto}
+.metronome-page{display:flex;flex-direction:column;min-height:100vh}
+.metronome-page .container{flex:1;min-height:100vh;padding:40rpx var(--page-gutter) calc(40rpx + env(safe-area-inset-bottom));gap:32rpx}
+.bpm-control{padding:0;width:100%;max-width:640rpx}.bpm-display{width:0;min-width:0;flex:1}.bpm-input{width:100%}
+.bpm-btn{margin:0;flex:0 0 80rpx}
+.play-area{width:100%}.circle-ring{width:380rpx;height:380rpx;max-width:70vw;max-height:70vw}
+.beat-dots{align-items:center;justify-content:center;flex-shrink:0}.ts-selector{flex-shrink:0}

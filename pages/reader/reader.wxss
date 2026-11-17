@@ -1,6 +1,6 @@
 /* --- 1. 基础布局修复 --- */
 page {
-  background-color: #ffffff;
+  background-color:var(--card-bg,#ffffff);
   box-sizing: border-box; /* ✨ 核心修复：防止页面变宽 */
 }
 
@@ -12,7 +12,7 @@ view, text, scroll-view {
   padding: 40rpx;
   width: 100%;
   /* 防止左右晃动 */
-  overflow-x: hidden; 
+  overflow-x: hidden;
 }
 
 /* 顶部菜单按钮 */
@@ -24,8 +24,8 @@ view, text, scroll-view {
 
 .menu-btn {
   padding: 10rpx 20rpx;
-  background-color: #f0f0f0;
-  border-radius: 30rpx;
+  background-color:var(--surface-bg,#f0f0f0);
+  border-radius:30rpx;
 }
 
 /* 标题区 */
@@ -37,14 +37,14 @@ view, text, scroll-view {
 .title {
   font-size: 56rpx;
   font-weight: bold;
-  color: #333;
+  color:var(--text-main,#333);
   display: block;
   margin-bottom: 16rpx;
 }
 
 .artist {
   font-size: 32rpx;
-  color: #666;
+  color:var(--text-secondary,#666);
 }
 
 /* 六大金刚 (阅读版) */
@@ -60,8 +60,8 @@ view, text, scroll-view {
 
 .meta-item {
   width: 30%;
-  background-color: #f9f9f9; /* 非常淡的灰 */
-  border-radius: 12rpx;
+  background-color:var(--surface-bg,#f9f9f9); /* 非常淡的灰 */
+  border-radius:12rpx;
   padding: 16rpx 0;
   display: flex;
   flex-direction: column; /* 上下排列：上面是标签，下面是值 */
@@ -70,30 +70,30 @@ view, text, scroll-view {
 
 .label {
   font-size: 22rpx;
-  color: #999;
+  color:var(--text-muted,#999);
   margin-bottom: 4rpx;
 }
 
 .value {
   font-size: 32rpx;
   font-weight: bold;
-  color: #333;
+  color:var(--text-main,#333);
 }
 
 /* 纸质谱信息 */
 .paper-info {
   font-size: 36rpx;
-  color: #555;
+  color:var(--text-secondary,#555);
   padding: 30rpx;
-  background-color: #f0f0f0;
-  border-radius: 16rpx;
+  background-color:var(--surface-bg,#f0f0f0);
+  border-radius:16rpx;
   margin-bottom: 60rpx;
   text-align: center;
 }
 /* --- 2. 歌词区 (准备接受动态字体大小) --- */
 .content-area {
   line-height: 2.0;
-  color: #333;
+  color:var(--text-main,#333);
   font-family: monospace;
   white-space: pre-wrap;
   display: block;
@@ -110,7 +110,7 @@ view, text, scroll-view {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* 50%透明度黑色 */
+  background-color:rgba(0, 0, 0, 0.5); /* 50%透明度黑色 */
   z-index: 900; /* 保证在最上层 */
 }
 
@@ -121,11 +121,11 @@ view, text, scroll-view {
   right: 0; /* 贴着右边 */
   width: 60%; /* 占据屏幕 60% 宽度 */
   height: 100%;
-  background-color: #ffffff;
+  background-color:var(--card-bg,#ffffff);
   z-index: 1000;
-  padding: 40rpx;
+  padding: 40rpx var(--page-gutter);
   box-shadow: -4rpx 0 10rpx rgba(0,0,0,0.1);
-  
+
   /* 弹性布局，方便放按钮 */
   display: flex;
   flex-direction: column;
@@ -149,14 +149,14 @@ view, text, scroll-view {
 .menu-item {
   padding: 24rpx 0;
   font-size: 34rpx;
-  color: #333;
+  color:var(--text-main,#333);
   display: flex;
   align-items: center;
 }
 
 .divider {
   height: 2rpx;
-  background-color: #f5f5f5;
+  background-color:var(--surface-bg,#f5f5f5);
   margin: 30rpx 0;
 }
 
@@ -175,23 +175,23 @@ view, text, scroll-view {
 .control-label {
   font-size: 32rpx;
   font-weight: bold;
-  color: #333;
+  color:var(--text-main,#333);
 }
 
 .control-sub-label {
   font-size: 28rpx;
-  color: #666;
+  color:var(--text-secondary,#666);
 }
 
 .control-value {
   font-size: 28rpx;
-  color: #999;
+  color:var(--text-muted,#999);
   font-family: monospace;
 }
 
 /* 删除按钮 */
 .delete {
-  color: #ff4d4f;
+  color:#ff4d4f;
   margin-top: auto; /* 推到底部 */
   margin-bottom: 20rpx;
 }
@@ -201,32 +201,32 @@ view, text, scroll-view {
   width: 120rpx; /* 足够放下 3 位数 */
   text-align: center;
   font-size: 28rpx;
-  color: #333;
+  color:var(--text-main,#333);
   font-family: monospace;
-  background-color: #f0f0f0; /* 浅灰色背景，表示可编辑 */
-  border-radius: 8rpx;
+  background-color:var(--surface-bg,#f0f0f0); /* 浅灰色背景，表示可编辑 */
+  border-radius:8rpx;
   padding: 5rpx 10rpx;
   /* 去掉小程序输入框默认的边框 */
-  border: none; 
+  border:none;
 }
 .reader-comment {
   margin-top: 40rpx;
   padding: 30rpx;
-  background-color: #fcfcfc; /* 极淡的背景色 */
-  border-left: 6rpx solid #FA7298; /* 左边加一根粉色色条，像引用块 */
-  border-radius: 8rpx;
+  background-color:var(--surface-bg,#fcfcfc); /* 极淡的背景色 */
+  border-left:6rpx solid var(--primary); /* 左边加一根粉色色条，像引用块 */
+  border-radius:8rpx;
 }
 
 .comment-tag {
   font-size: 20rpx;
   font-weight: bold;
-  color: #FA7298;
+  color:var(--primary);
   margin-bottom: 10rpx;
 }
 
 .comment-text {
   font-size: 28rpx;
-  color: #666;
+  color:var(--text-secondary,#666);
   line-height: 1.5;
 }
 
@@ -239,12 +239,16 @@ view, text, scroll-view {
 
 .file-item {
   padding: 16rpx 20rpx;
-  border-radius: 12rpx;
-  background: #f7f7f7;
+  border-radius:12rpx;
+  background:var(--surface-bg,#f7f7f7);
 }
 
 .file-name {
   font-size: 28rpx;
-  color: #333;
+  color:var(--text-main,#333);
 }
 
+.content-area,.title,.comment-text{overflow-wrap:anywhere}.drawer-panel{overflow-y:auto;padding-bottom:calc(40rpx + env(safe-area-inset-bottom))}
+
+.meta-row{gap:16rpx}.meta-item{width:0;flex:1;min-width:0;text-align:center}
+.menu-btn{display:flex;align-items:center;justify-content:center;min-width:64rpx;min-height:64rpx;line-height:1}

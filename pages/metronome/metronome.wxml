@@ -1,3 +1,5 @@
+<page-meta page-style="background-color: {{pageBackground}};" />
+<view class="theme-root metronome-page" style="{{themeStyle}}">
 <view class="container">
   
   <!-- 1. 顶部 BPM 控制区 -->
@@ -47,4 +49,5 @@
     <text class="ts-label">拍号 (点击切换)</text>
   </view>
 
+</view>
 </view>

@@ -1,35 +1,13 @@
-<view class="container">
-  
-  <view class="header">
-    <text class="title">回收站</text>
-    <text class="subtitle">有效期30天，过期自动清理</text>
+<page-meta page-style="background-color: {{pageBackground}};" />
+<view class="theme-root" style="{{themeStyle}}"><view class="container">
+  <view class="page-toolbar trash-toolbar"><text class="section-count">{{trashList.length}} 首已删除曲谱</text><button class="danger-button trash-clear" bindtap="clearAll" disabled="{{busy || !trashList.length}}">清空</button></view>
+  <text class="muted">可恢复到曲谱库，或手动彻底删除。不会自动清理。</text>
+  <view wx:if="{{loading}}" class="feedback">正在加载…</view>
+  <view wx:if="{{error}}" class="feedback"><text>{{error}}</text><button bindtap="load" disabled="{{busy}}">重新加载</button></view>
+  <view class="trash-card" wx:for="{{trashList}}" wx:key="_id">
+    <text class="score-title">{{item.title}}</text><text class="muted">删除日期：{{item.deletedText}}</text>
+    <text wx:if="{{item.purgeStarted}}" class="purge-tip">清理未完成，请重试彻底删除；此曲谱已无法恢复。</text>
+    <view class="trash-actions"><button class="button-quiet compact" bindtap="recoverSong" data-id="{{item._id}}" disabled="{{busy || item.purgeStarted}}">恢复</button><button class="danger-button" bindtap="deleteForever" data-id="{{item._id}}" disabled="{{busy}}">{{item.purgeStarted ? '重试彻底删除' : '彻底删除'}}</button></view>
   </view>
-
-  <view class="list">
-    <block wx:for="{{trashList}}" wx:key="id">
-      <view class="trash-card">
-        
-        <!-- 左侧信息 -->
-        <view class="info">
-          <text class="song-title">{{item.title}}</text>
-          <text class="expire-tip">⚠️ {{item.daysLeft}}天后过期</text>
-        </view>
-
-        <!-- 右侧按钮组 -->
-        <view class="actions">
-          <!-- 恢复按钮 -->
-          <view class="btn recover" bindtap="recoverSong" data-id="{{item._id}}">恢复</view>
-          <!-- 彻底删除按钮 -->
-          <view class="btn delete" bindtap="deleteForever" data-id="{{item._id}}">销毁</view>
-        </view>
-
-      </view>
-    </block>
-  </view>
-
-  <!-- 空状态 -->
-  <view class="empty" wx:if="{{trashList.length === 0}}">
-    <text>回收站是空的</text>
-  </view>
-
-</view>
+  <view wx:if="{{!loading && !error && !trashList.length}}" class="blank-state"><text class="blank-title">回收站是空的</text><text>删除的曲谱会暂存在这里</text></view>
+</view></view>

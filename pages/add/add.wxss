@@ -1,6 +1,6 @@
 page {
-  background-color: #f8f8f8;
-  box-sizing: border-box; 
+  background-color:var(--page-bg,#f8f8f8);
+  box-sizing: border-box;
 }
 
 view, text {
@@ -10,20 +10,6 @@ view, text {
 .container {
   padding: 30rpx;
   width: 100%;
-}
-
-/* ✨ 简洁的顶部标题区 */
-.add-header {
-  margin-bottom: 40rpx;
-  width: 100%;
-  text-align: center;
-}
-
-.add-title {
-  font-size: 48rpx;
-  font-weight: bold;
-  color: #333;
-  display: block;
 }
 
 /* ✨ 菜单列表 */
@@ -36,8 +22,8 @@ view, text {
 
 .menu-card {
   width: 100%;
-  background-color: #fff;
-  border-radius: 20rpx;
+  background-color:var(--card-bg,#fff);
+  border-radius:20rpx;
   padding: 30rpx;
   display: flex;
   align-items: center;
@@ -45,9 +31,10 @@ view, text {
 }
 
 .icon-box {
+  background: var(--soft);
   width: 100rpx;
   height: 100rpx;
-  border-radius: 50%;
+  border-radius:50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -70,18 +57,22 @@ view, text {
 .card-title {
   font-size: 36rpx;
   font-weight: bold;
-  color: #333;
+  color:var(--text-main,#333);
   margin-bottom: 8rpx;
 }
 
 .card-desc {
   font-size: 26rpx;
-  color: #999;
+  color:var(--text-muted,#999);
 }
 
 .arrow {
-  color: #ddd;
+  color:var(--text-muted,#ddd);
   font-size: 32rpx;
   margin-left: 20rpx;
   flex-shrink: 0;
 }
+
+.card-title,.card-desc{overflow-wrap:anywhere}
+
+.arrow{width:24rpx;flex:0 0 24rpx;display:flex;align-items:center;justify-content:center;line-height:1}

@@ -1,68 +1,32 @@
-const db = wx.cloud.database();
-
-Page({
-  data: {
-    trashList: []
+const library=require('../../utils/library');
+const {statusOf}=require('../../utils/songFilters');
+const theme=require('../../utils/theme');
+Page(theme.page({
+  data:{trashList:[],loading:false,error:'',busy:false},
+  onShow(){return this.load();},
+  async load(){
+    this.setData({loading:true,error:''});
+    try{const songs=await library.all('songs');this.setData({trashList:songs.filter(s=>statusOf(s.status)==='deleted').sort((a,b)=>(b.deleteDate || 0)-(a.deleteDate || 0)).map(s=>({...s,deletedText:s.deleteDate?new Date(s.deleteDate).toLocaleDateString():'未知'}))});}
+    catch(e){this.setData({error:library.errorText(e)});}
+    finally{this.setData({loading:false});}
   },
-
-  onShow() {
-    this.loadTrashFromCloud();
+  async recoverSong(e){
+    if(this.data.busy)return;this.setData({busy:true});
+    try{await library.restoreSong(e.currentTarget.dataset.id);await this.load();wx.showToast({title:'已恢复到曲谱库',icon:'success'});}
+    catch(error){wx.showToast({title:library.errorText(error,'恢复失败，请重试'),icon:'none'});}
+    finally{this.setData({busy:false});}
   },
-
-  loadTrashFromCloud() {
-    wx.showLoading({ title: '加载中...' });
-    db.collection('songs').where({
-      status: 'deleted' // 只查回收站里的
-    }).get().then(res => {
-      wx.hideLoading();
-      // 计算剩余天数 (逻辑不变)
-      const list = res.data.map(song => {
-        const diff = Date.now() - (song.deleteDate || Date.now());
-        let daysLeft = 30 - Math.floor(diff / (24 * 60 * 60 * 1000));
-        return { ...song, daysLeft: daysLeft < 0 ? 0 : daysLeft };
-      });
-      this.setData({ trashList: list });
-    });
-  },
-
-  // 恢复歌曲
-  recoverSong(e) {
-    const _id = e.currentTarget.dataset.id; // 云开发用 _id
-    db.collection('songs').doc(_id).update({
-      data: { status: 'practicing', deleteDate: null }
-    }).then(() => {
-      wx.showToast({ title: '已恢复' });
-      this.loadTrashFromCloud();
-    });
-  },
-
-  // 彻底删除
-  deleteForever(e) {
-    const _id = e.currentTarget.dataset.id;
-    wx.showModal({
-      title: '彻底销毁',
-      content: '无法找回，确定吗？',
-      success: (res) => {
-        if (res.confirm) {
-          db.collection('songs').doc(_id).remove().then(() => {
-            wx.showToast({ title: '已销毁' });
-            this.loadTrashFromCloud();
-          });
-        }
-      }
-    });
-  },
-  // 分享给朋友
-  onShareAppMessage() {
-    return app.globalShare();
-  },
-
-  // 分享到朋友圈
-  onShareTimeline() {
-    // 朋友圈模版通常只需要一个标题
-    return {
-      title: 'Lyra吉他谱本 - 吉他手的私人云端琴房',
-      imageUrl: '/images/icon.png'
-    }
+  deleteForever(e){return this.purge([e.currentTarget.dataset.id]);},
+  clearAll(){return this.purge(this.data.trashList.map(s=>s._id));},
+  async purge(ids){
+    if(this.data.busy || !ids.length)return;this.setData({busy:true});
+    try{
+      const res=await theme.modal({title:'彻底删除',content:`永久删除 ${ids.length} 首曲谱及不再使用的附件？此操作无法恢复。`,confirmColor:'#D14343',confirmText:'彻底删除'});
+      if(!res.confirm)return;
+      const result=await library.batch(ids,library.purgeSong);await this.load();
+      if(result.failed.length)this.setData({error:`已清理 ${result.succeeded.length} 首，${result.failed.length} 首失败。请对剩余曲谱重试彻底删除。`});
+      else wx.showToast({title:'清理完成',icon:'success'});
+    }catch(e){this.setData({error:library.errorText(e,'清理失败，请重试')});await this.load();}
+    finally{this.setData({busy:false});}
   }
-});
+}));

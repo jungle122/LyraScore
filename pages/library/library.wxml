@@ -1,0 +1,85 @@
+<page-meta page-style="background-color: {{pageBackground}};" />
+<view class="theme-root" style="{{themeStyle}}">
+
+<view class="container">
+
+  <view class="top-bar" wx:if="{{!isEditMode}}">
+    <!-- 伪搜索框：其实是一个按钮 -->
+    <view class="search-entry" bindtap="goToSearch">
+      <view class="search-box">
+        <image class="search-icon-img" src="/images/remix/search-gray.png" />
+        <text class="search-text">搜索曲谱...</text>
+      </view>
+    </view>
+    <view class="manage-btn" bindtap="toggleEditMode">管理</view>
+  </view>
+
+  <view class="manage-toolbar" wx:if="{{isEditMode}}">
+    <view class="toolbar-left" bindtap="toggleSelectAll">
+      <view class="select-all-circle {{selectedIds.length > 0 && selectedIds.length === songList.length ? 'checked' : ''}}"></view>
+      <text class="toolbar-text">全选</text>
+    </view>
+    <text class="toolbar-count">已选 {{selectedIds.length}}</text>
+    <view class="toolbar-done" bindtap="toggleEditMode">完成</view>
+  </view>
+
+  <view class="browse-toolbar">
+    <button class="browse-filter browse-control {{filterCount ? 'is-active' : ''}}" bindtap="openFilters">筛选{{filterCount ? ' · ' + filterCount + ' 项' : ''}} ▾</button>
+    <picker class="browse-picker" range="{{sortOptions}}" range-key="label" value="{{sortIndex}}" bindchange="onSortChange">
+      <view class="browse-sort">{{sortOptions[sortIndex].label}} ▾</view>
+    </picker>
+  </view>
+  <view wx:if="{{filterCount}}" class="browse-reset-row"><text class="browse-reset" bindtap="resetFilters">清除筛选</text></view>
+
+  <view wx:if="{{loading}}" class="feedback">正在加载曲谱…</view>
+  <view wx:if="{{error}}" class="feedback"><text>{{error}}</text><button bindtap="loadSongs">重试</button></view>
+  <view class="song-list" wx:if="{{!error}}">
+    <block wx:for="{{songList}}" wx:key="_id">
+
+      <!-- 回归最简单的卡片，点击直接跳转 -->
+      <view class="song-card" bindtap="onCardTap" data-id="{{item.id}}" data-uid="{{item._id}}">
+        <view class="select-circle {{item.selected ? 'checked' : ''}}" wx:if="{{isEditMode}}" catchtap="toggleSelectItem" data-uid="{{item._id}}"></view>
+        <view class="card-info">
+          <text class="song-title">{{item.title}}</text>
+          <text class="song-meta stored-date">存入时间：{{item.storedDateText}}</text>
+          <text class="song-artist">{{item.artist ? item.artist : ' - '}}</text>
+          <text class="song-meta" wx:if="{{item.type === 'paper'}}">{{item.location}}</text>
+
+        </view>
+        <view class="card-tag {{item.type}}">
+          {{item.type === 'blank' ? '文字谱' : (item.type === 'paper' ? '归档' : '图片')}}
+        </view>
+      </view>
+
+    </block>
+  </view>
+
+  <view class="empty-state" wx:if="{{!loading && !error && songList.length === 0}}">
+    <text>{{filterCount ? '没有符合条件的曲谱' : '曲谱库还是空的'}}</text>
+    <text wx:if="{{filterCount}}" class="browse-reset" bindtap="resetFilters">清除筛选，查看全部</text>
+    <text wx:else>点击底部 + 号添加吧</text>
+  </view>
+
+  <view class="action-bar" wx:if="{{isEditMode}}">
+    <view class="action-btn delete-btn {{selectedIds.length === 0 ? 'disabled' : ''}}" bindtap="batchDelete">移入回收站</view>
+    <view class="action-btn {{selectedIds.length === 0 ? 'disabled' : ''}}" bindtap="openPlaylistPicker">加入歌单</view>
+  </view>
+
+</view>
+<view wx:if="{{showFilters}}" class="filter-overlay" catchtap="closeFilters" catchtouchmove="stopPanelTap">
+  <view class="filter-sheet" catchtap="stopPanelTap">
+    <view class="sheet-heading"><text>筛选曲谱</text><button class="sheet-close" bindtap="closeFilters">关闭</button></view>
+    <scroll-view scroll-y class="sheet-options">
+      <view wx:for="{{filterGroups}}" wx:for-item="group" wx:key="key" class="sheet-group">
+        <text class="sheet-label">{{group.label}}</text>
+        <view class="sheet-choices">
+          <button wx:for="{{group.options}}" wx:key="value" class="sheet-choice {{draftFilters[group.key] === item.value ? 'chosen' : ''}}" data-key="{{group.key}}" data-value="{{item.value}}" bindtap="changeDraftFilter">{{item.label}}</button>
+        </view>
+      </view>
+    </scroll-view>
+    <view class="sheet-actions"><button class="sheet-reset" bindtap="resetDraftFilters">重置</button><button class="sheet-confirm" bindtap="confirmFilters">确定</button></view>
+  </view>
+</view>
+<playlist-picker visible="{{showPlaylistPicker}}" song-ids="{{selectedIds}}" theme-style="{{themeStyle}}" bindclose="closePlaylistPicker" />
+
+</view>

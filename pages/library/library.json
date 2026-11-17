@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "Lyra吉他谱本",
+  "usingComponents": {
+    "playlist-picker": "/components/playlist-picker/index"
+  }
+}

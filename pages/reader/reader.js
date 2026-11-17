@@ -1,10 +1,14 @@
-const db = wx.cloud.database();
+const library = require('../../utils/library');
+const theme = require('../../utils/theme');
 
-Page({
+Page(require('../../utils/theme').page({
   data: {
     song: null,
     currentSongId: null,
     showDrawer: false,
+    showPlaylistPicker: false,
+    pickerSongIds: [],
+    loadError: '',
     fontSize: 36,
     isKeepScreenOn: false, // ✨ 屏幕常亮开关
     
@@ -19,7 +23,7 @@ Page({
   },
 
   onLoad(options) {
-    const id = Number(options.id);
+    const id = options.uid ? {uid:options.uid} : {id:Number(options.id)};
     this.setData({ currentSongId: id });
     
     // 1. 加载歌曲信息
@@ -160,27 +164,18 @@ Page({
   },
 
   // --- 业务逻辑：加载歌曲 ---
-  loadSongFromCloud(id) {
-    wx.showLoading({ title: '加载中...' });
-    db.collection('songs').where({ id: id }).get().then(res => {
-      wx.hideLoading();
-      if (res.data.length > 0) {
-        const targetSong = res.data[0];
-        // 兼容图片数组
-        if (!targetSong.imagePaths && targetSong.imagePath) {
-          targetSong.imagePaths = [targetSong.imagePath];
-        }
-        this.setData({
-          song: targetSong,
-          currentBpm: targetSong.bpm || 90
-        });
-        wx.setNavigationBarTitle({ title: targetSong.title });
-      }
-    }).catch(err => {
-      wx.hideLoading();
-      console.error(err);
-    });
+  async loadSongFromCloud(id) {
+    this.setData({loadError:''});
+    try {
+      const song=await library.getSong(id);
+      if(!library.isActive(song))throw new Error('曲谱已删除，请返回曲谱库');
+      song.imagePaths=song.imagePaths || (song.imagePath?[song.imagePath]:[]);
+      this.setData({song,currentBpm:song.bpm || 90,pickerSongIds:[song._id]});wx.setNavigationBarTitle({title:song.title});
+    }catch(e){this.setData({song:null,loadError:library.errorText(e)});}
   },
+  retryLoad(){return this.loadSongFromCloud(this.data.currentSongId);},
+  openPlaylistPicker(){this.closeDrawer();this.setData({showPlaylistPicker:true});},
+  closePlaylistPicker(){this.setData({showPlaylistPicker:false});},
 
   // --- 业务逻辑：菜单与状态 ---
   openDrawer() { this.setData({ showDrawer: true }); },
@@ -202,41 +197,19 @@ Page({
   },
 
   goToEdit() {
+    if (!this.data.song) return;
     this.closeDrawer();
-    wx.navigateTo({ url: `/pages/editor/editor?id=${this.data.song.id}` });
+    wx.navigateTo({url:`/pages/editor/editor?uid=${encodeURIComponent(this.data.song._id)}`});
   },
 
-  markAsPracticing() {
-    this.updateStatus('practicing', '已移回“正在练”');
-  },
-
-  markAsFinished() {
-    this.updateStatus('finished', '太棒了！🎉');
-  },
-
-  deleteSong() {
-    wx.showModal({
-      title: '确认删除',
-      content: '确定要删除这首曲谱吗？',
-      confirmColor: '#ff4d4f',
-      success: (res) => {
-        if (res.confirm) {
-          this.updateStatus('deleted', '已移入回收站');
-        }
-      }
-    });
-  },
-
-  updateStatus(newStatus, toastMsg) {
-    db.collection('songs').doc(this.data.song._id).update({
-      data: {
-        status: newStatus,
-        deleteDate: newStatus === 'deleted' ? Date.now() : null
-      }
-    }).then(() => {
-      wx.showToast({ title: toastMsg, icon: 'success' });
-      setTimeout(() => { wx.navigateBack(); }, 1200);
-    });
+  async deleteSong() {
+    if(this._deleting || !this.data.song)return;this._deleting=true;
+    try {
+      const res=await theme.modal({title:'移入回收站',content:'之后可在回收站恢复这首曲谱。',confirmColor:'#D14343'});if(!res.confirm)return;
+      const result=await library.trashSongs([this.data.song._id]);
+      if(result.failed.length)throw new Error('删除失败，请重试');
+      wx.navigateBack();
+    }catch(e){wx.showToast({title:library.errorText(e),icon:'none'});}finally{this._deleting=false;}
   },
 
   // 图片全屏预览
@@ -261,4 +234,4 @@ Page({
   },
 
   saveImage() { wx.showToast({ title: '功能开发中', icon: 'none' }); }
-});
+}));

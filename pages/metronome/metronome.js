@@ -1,4 +1,4 @@
-Page({
+Page(require('../../utils/theme').page({
   data: {
     bpm: 90,
     isPlaying: false,
@@ -31,6 +31,8 @@ Page({
     // 2. 预加载声音
     this.loadTickSound();
   },
+
+  onHide() { this.stop(); },
 
   onUnload() {
     this.stop();
@@ -171,7 +173,7 @@ Page({
   },
   // 分享给朋友
   onShareAppMessage() {
-    return app.globalShare();
+    return getApp().globalShare();
   },
 
   // 分享到朋友圈
@@ -182,4 +184,4 @@ Page({
       imageUrl: '/images/icon.png'
     }
   }
-});
+}));

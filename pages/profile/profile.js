@@ -1,85 +1,29 @@
 const localStore = require('../../utils/localStore.js');
+const library=require('../../utils/library');
+const theme=require('../../utils/theme');
+const {statusOf}=require('../../utils/songFilters');
 
-Page({
-  data: {
-    counts: {
-      practicing: 0,
-      finished: 0,
-      deleted: 0
-    }
+Page(require('../../utils/theme').page({
+  data:{counts:{songs:0,playlists:0,deleted:0},statsError:'',showTheme:false},
+  onShow(){return this.calculateStats();},
+  async calculateStats(){
+    this.setData({statsError:''});
+    try{const [songs,playlists]=await Promise.all([library.all('songs'),library.all('playlists')]);
+      this.setData({counts:{songs:songs.filter(library.isActive).length,playlists:playlists.length,deleted:songs.filter(s=>statusOf(s.status)==='deleted').length}});
+    }catch(e){this.setData({statsError:library.errorText(e)});}
   },
-  // --- ✨ 随机抽查逻辑 ---
-  randomPick() {
-    const db = wx.cloud.database();
-    wx.showLoading({ title: '正在抽签...', mask: true });
-
-    // 1. 只查“正在练”的歌
-    db.collection('songs')
-      .where({ status: 'practicing' })
-      .field({ id: true, title: true }) // ⚠️ 关键：只取 id 和 title，省流量
-      .get()
-      .then(res => {
-        wx.hideLoading();
-        const list = res.data;
-
-        if (list.length === 0) {
-          wx.showToast({ title: '没歌可练啦，快去添加吧', icon: 'none' });
-          return;
-        }
-
-        // 2. 随机算法
-        const randomIndex = Math.floor(Math.random() * list.length);
-        const luckySong = list[randomIndex];
-
-        // 3. 弹窗展示结果
-        wx.showModal({
-          title: '命运的安排',
-          content: `今天就练这首吧：\n\n🎸 《${luckySong.title}》`,
-          confirmText: '去练习',
-          confirmColor: '#fa7298',
-          cancelText: '取消',
-          success: (r) => {
-            if (r.confirm) {
-              // 4. 跳转到 Reader 页面 (记得带上 id)
-              wx.navigateTo({
-                url: `/pages/reader/reader?id=${luckySong.id}`
-              });
-            } else if (r.cancel) {
-              // 用户点了"取消"，关闭弹窗即可
-              return;
-            }
-          }
-        });
-      })
-      .catch(err => {
-        wx.hideLoading();
-        console.error(err);
-      });
+  openTheme(){this.setData({showTheme:true});},
+  closeTheme(){this.setData({showTheme:false});},
+  noop(){},
+  chooseTheme(e){try{theme.set(e.currentTarget.dataset.id);}catch(_){wx.showToast({title:'主题保存失败，请重试',icon:'none'});}},
+  chooseAppearance(e){try{theme.setAppearance(e.currentTarget.dataset.id);}catch(_){wx.showToast({title:'外观保存失败，请重试',icon:'none'});}},
+  async randomPick(){
+    try{const songs=(await library.all('songs')).filter(library.isActive);if(!songs.length){wx.showToast({title:'先添加一首曲谱吧',icon:'none'});return;}
+      const song=songs[Math.floor(Math.random()*songs.length)];
+      const res=await theme.modal({title:'随机抽一首',content:song.title,confirmText:'查看曲谱'});
+      if(res.confirm)wx.navigateTo({url:'/pages/reader/reader?uid='+encodeURIComponent(song._id)});
+    }catch(e){wx.showToast({title:library.errorText(e),icon:'none'});}
   },
-
-  onShow() {
-    this.calculateStats();
-  },
-
-  calculateStats() {
-    const db = wx.cloud.database();
-
-    // 1. 统计正在练
-    db.collection('songs').where({ status: 'practicing' }).count().then(res => {
-      this.setData({ 'counts.practicing': res.total });
-    });
-
-    // 2. 统计已练完
-    db.collection('songs').where({ status: 'finished' }).count().then(res => {
-      this.setData({ 'counts.finished': res.total });
-    });
-
-    // 3. 统计回收站
-    db.collection('songs').where({ status: 'deleted' }).count().then(res => {
-      this.setData({ 'counts.deleted': res.total });
-    });
-  },
-
   // --- 简单的跳转逻辑 ---
   
   // 去回收站页面
@@ -98,11 +42,11 @@ Page({
   // --- 数据备份：把云端 songs + 所有 cloud:// 文件保存到本地硬盘 ---
   async exportAll() {
     const ok = await new Promise(resolve => {
-      wx.showModal({
+      require('../../utils/theme').modal({
         title: '备份全部数据到电脑',
         content: '将拉取全部曲谱与图片/PDF。请在“微信开发者工具”里点这个按钮（不要在真机上点），导出位置是工具的 USER_DATA_PATH/lyra-export 文件夹。',
         confirmText: '开始',
-        confirmColor: '#FA7298',
+        confirmColor: require('../../utils/theme').data().themePrimary,
         success: resolve
       });
     });
@@ -112,6 +56,7 @@ Page({
 
     try {
       const allSongs = await this.fetchAllSongs();
+      const allPlaylists = await library.all('playlists');
 
       const fs = wx.getFileSystemManager();
       const baseDir = `${wx.env.USER_DATA_PATH}/lyra-export`;
@@ -165,10 +110,11 @@ Page({
 
       const jsonPath = `${baseDir}/songs.json`;
       fs.writeFileSync(jsonPath, JSON.stringify(allSongs, null, 2), 'utf8');
+      fs.writeFileSync(baseDir + '/playlists.json',JSON.stringify(allPlaylists,null,2),'utf8');
 
       wx.hideLoading();
 
-      wx.showModal({
+      require('../../utils/theme').modal({
         title: '备份完成 🎉',
         content: `共 ${allSongs.length} 首曲谱，下载 ${done}/${totalFiles} 个文件${failed.length ? `，失败 ${failed.length} 个（已记入控制台）` : ''}。\n\n位置：${baseDir}\n\n在微信开发者工具菜单：设置 → 通用设置 → 文件位置，找到“用户数据目录”，进入 lyra-export 即可。`,
         showCancel: false,
@@ -178,7 +124,7 @@ Page({
     } catch (err) {
       wx.hideLoading();
       console.error('备份失败:', err);
-      wx.showModal({
+      require('../../utils/theme').modal({
         title: '备份失败',
         content: String((err && err.errMsg) || (err && err.message) || err),
         showCancel: false
@@ -186,21 +132,7 @@ Page({
     }
   },
 
-  async fetchAllSongs() {
-    // ⚠️ 小程序端 .get() 单次最多返回 20 条，与 .limit() 写多少无关
-    const PAGE_SIZE = 20;
-    const db = wx.cloud.database();
-    let all = [];
-    let skip = 0;
-    while (true) {
-      const res = await db.collection('songs').orderBy('_id', 'asc').skip(skip).limit(PAGE_SIZE).get();
-      all = all.concat(res.data);
-      wx.showLoading({ title: `拉取曲谱 ${all.length}...`, mask: true });
-      if (res.data.length < PAGE_SIZE) break;
-      skip += PAGE_SIZE;
-    }
-    return all;
-  },
+  fetchAllSongs(){return library.all('songs');},
 
   // --- 一键迁移：把云端 songs + 所有 cloud:// 文件落到「这部手机」的本地存储 ---
   // 跑完后曲谱信息进 wx.setStorage，图片/PDF 进 USER_DATA_PATH/lyra-files，
@@ -212,11 +144,11 @@ Page({
       : '';
 
     const ok = await new Promise(resolve => {
-      wx.showModal({
+      require('../../utils/theme').modal({
         title: '迁移到本地',
         content: `将把云端全部曲谱与图片/PDF 下载到这部手机的本地存储，之后即可不再使用云开发。请在你常用的手机上操作。${warn}`,
         confirmText: '开始迁移',
-        confirmColor: '#FA7298',
+        confirmColor: require('../../utils/theme').data().themePrimary,
         success: resolve
       });
     });
@@ -276,18 +208,18 @@ Page({
       localStore.saveAllSongs(allSongs);
 
       wx.hideLoading();
-      wx.showModal({
+      require('../../utils/theme').modal({
         title: '迁移完成 🎉',
         content: `已存入本地 ${allSongs.length} 首曲谱，下载 ${done}/${totalFiles} 个文件${failed.length ? `，失败 ${failed.length} 个（已记入控制台）` : ''}。\n\n数据现已在这部手机本地。下一步可切换 App 读写本地。`,
         showCancel: false,
         confirmText: '好的',
-        confirmColor: '#FA7298'
+        confirmColor: require('../../utils/theme').data().themePrimary
       });
       if (failed.length) console.warn('未能下载的 cloud 路径：', failed);
     } catch (err) {
       wx.hideLoading();
       console.error('迁移失败:', err);
-      wx.showModal({
+      require('../../utils/theme').modal({
         title: '迁移失败',
         content: String((err && err.errMsg) || (err && err.message) || err),
         showCancel: false
@@ -297,17 +229,17 @@ Page({
 
   // 关于
   showAbout() {
-    wx.showModal({
+    require('../../utils/theme').modal({
       title: '关于 Lyra吉他谱本',
-      content: '由 Lyra 开发的私人吉他谱管理工具。\n 图标素材由 iconfont 设计师【落叶寄相思】提供。\n备案号：赣ICP备2026002165号-1X\n 联系作者：congconglinr@foxmail.com \n Version 2.2.0',
+      content: '由 Lyra 开发的私人吉他谱管理工具。\n 界面图标使用 Remix Icon；部分原有素材来自 iconfont 设计师【落叶寄相思】。\n备案号：赣ICP备2026002165号-1X\n 联系作者：congconglinr@foxmail.com \n Version 2.2.0',
       showCancel: false,
       confirmText: '我知道了',
-      confirmColor: '#FA7298' // 使用你的主题粉色
+      confirmColor: require('../../utils/theme').data().themePrimary // 使用你的主题粉色
     });
   },
   // 分享给朋友
   onShareAppMessage() {
-    return app.globalShare();
+    return getApp().globalShare();
   },
 
   // 分享到朋友圈
@@ -318,4 +250,4 @@ Page({
       imageUrl: '/images/icon.png'
     }
   }
-});
+}));

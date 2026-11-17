@@ -1,0 +1,16 @@
+{
+  "light": {
+    "pageBackground": "#F8F8F8",
+    "cardBackground": "#FFFFFF",
+    "navigationTextStyle": "black",
+    "backgroundTextStyle": "dark",
+    "tabBorderStyle": "black"
+  },
+  "dark": {
+    "pageBackground": "#171717",
+    "cardBackground": "#232323",
+    "navigationTextStyle": "white",
+    "backgroundTextStyle": "light",
+    "tabBorderStyle": "white"
+  }
+}

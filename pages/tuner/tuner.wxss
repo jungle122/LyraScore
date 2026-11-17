@@ -1,5 +1,5 @@
 page {
-  background-color: #f8f8f8;
+  background-color:var(--page-bg,#f8f8f8);
   box-sizing: border-box;
 }
 
@@ -16,16 +16,16 @@ page {
   align-items: center;
   margin-bottom: 20rpx;
   /* 加个边框让它看起来像按钮 */
-  background-color: #fff;
+  background-color:var(--card-bg,#fff);
   padding: 20rpx 40rpx;
-  border-radius: 20rpx;
+  border-radius:20rpx;
   box-shadow: 0 4rpx 10rpx rgba(0,0,0,0.05);
 }
 .control-panel {
-  width: 90%;
-  background-color: #fff;
+  width: 100%;
+  background-color:var(--card-bg,#fff);
   padding: 20rpx 30rpx;
-  border-radius: 20rpx;
+  border-radius:20rpx;
   margin-bottom: 40rpx;
   box-shadow: 0 4rpx 10rpx rgba(0,0,0,0.05);
 }
@@ -39,12 +39,12 @@ page {
 .control-label {
   font-size: 30rpx;
   font-weight: bold;
-  color: #333;
+  color:var(--text-main,#333);
 }
 
 .control-value {
   font-size: 28rpx;
-  color: #fa7298;
+  color:var(--primary);
   font-family: monospace;
 }
 
@@ -55,21 +55,21 @@ page {
 
 .switch-icon {
   font-size: 24rpx;
-  color: #fa7298;
+  color:var(--primary);
   margin-left: 10rpx;
-  margin-top: 6rpx;
+  margin-top: 0;
 }
 
 /* ... title 和 subtitle 样式微调 ... */
-.title { font-size: 40rpx; font-weight: bold; color: #333; }
-.subtitle { font-size: 24rpx; color: #999; margin-bottom: 0; margin-top: 6rpx; }
+.title { font-size: 40rpx; font-weight: bold; color:var(--text-main,#333); }
+.subtitle { font-size: 24rpx; color:var(--text-muted,#999); margin-bottom: 0; margin-top: 6rpx; }
 
 /* --- 吉他绘制核心区 --- */
 .guitar-head-area {
   position: relative;
   width: 500rpx;
   height: 800rpx;
-  /* background: rgba(0,0,0,0.05); 用于调试的背景色 */
+  /* background:rgba(0,0,0,0.05); 用于调试的背景色 */
   display: flex;
   justify-content: center;
 }
@@ -78,19 +78,19 @@ page {
 .headstock-body {
   width: 180rpx;
   height: 100%;
-  background-color: #5d4037; /* 深木色 */
-  border-radius: 20rpx 20rpx 0 0;
+  background-color:#5d4037; /* 深木色 */
+  border-radius:20rpx 20rpx 0 0;
   box-shadow: 0 10rpx 20rpx rgba(0,0,0,0.3);
   position: relative;
   z-index: 1; /* 在最底层 */
-  
+
   display: flex;
   justify-content: center;
   padding-top: 40rpx;
 }
 
 .brand {
-  color: rgba(255,255,255,0.3);
+  color:rgba(255,255,255,0.3);
   font-family: 'Times New Roman', serif;
   font-size: 40rpx;
   font-weight: bold;
@@ -105,7 +105,7 @@ page {
   height: 100%;
   z-index: 2; /* 在琴头上面 */
   pointer-events: none; /* 让点击穿透过去 */
-  
+
   display: flex;
   justify-content: center;
 }
@@ -113,13 +113,13 @@ page {
 .string {
   width: 2rpx; /* 弦的粗细 */
   height: 100%;
-  background-color: #d7ccc8; /* 银色 */
+  background-color:#d7ccc8; /* 银色 */
   margin: 0 6rpx; /* 弦之间的距离 */
   opacity: 0.8;
 }
 /* 粗弦稍微粗一点 */
-.s6 { width: 4rpx; background-color: #a1887f; margin-left: -20rpx; } 
-.s5 { width: 3.5rpx; background-color: #a1887f; }
+.s6 { width: 4rpx; background-color:#a1887f; margin-left: -20rpx; }
+.s5 { width: 3.5rpx; background-color:#a1887f; }
 .s1 { margin-right: -20rpx; }
 
 
@@ -145,7 +145,7 @@ page {
 
 .label {
   font-size: 24rpx;
-  color: #999;
+  color:var(--text-muted,#999);
   margin: 0 16rpx;
 }
 
@@ -153,27 +153,27 @@ page {
 .peg-knob {
   width: 90rpx;
   height: 90rpx;
-  background-color: #e0e0e0; /* 银色金属 */
-  border: 4rpx solid #bdbdbd;
-  border-radius: 50%;
-  
+  background-color:var(--border,#e0e0e0); /* 银色金属 */
+  border:4rpx solid #bdbdbd;
+  border-radius:50%;
+
   display: flex;
   justify-content: center;
   align-items: center;
-  
+
   font-size: 40rpx;
   font-weight: bold;
-  color: #333;
-  
+  color:var(--text-main,#333);
+
   box-shadow: 0 4rpx 8rpx rgba(0,0,0,0.2);
   transition: all 0.2s; /* 动画过渡 */
 }
 
 /* 选中激活状态 (变粉色) */
 .peg-knob.active {
-  background-color: #fa7298;
-  color: white;
-  border-color: #fa7298;
+  background-color:var(--primary);
+  color:white;
+  border-color:var(--primary);
   transform: scale(1.1); /* 稍微放大 */
   box-shadow: 0 0 20rpx rgba(250, 114, 152, 0.6);
 }
@@ -181,5 +181,8 @@ page {
 .tips {
   margin-top: 60rpx;
   font-size: 26rpx;
-  color: #999;
+  color:var(--text-muted,#999);
 }
+.peg-knob{background:#e0e0e0;color:#333}.peg-knob.active{color:var(--on-primary)}
+
+.control-row{align-items:center}.title-row{justify-content:center}.header-group,.tips{text-align:center}.label{width:24rpx;text-align:center}

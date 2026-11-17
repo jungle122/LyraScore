@@ -1,11 +1,13 @@
+<page-meta page-style="background-color: {{pageBackground}};" />
+<view class="theme-root" style="{{themeStyle}}">
 <view class="container">
-  
+
   <!-- 1. 顶部：调弦模式选择器 (Standard, Drop D, Open G...) -->
-  <picker 
-    mode="selector" 
-    range="{{presets}}" 
-    range-key="name" 
-    value="{{presetIndex}}" 
+  <picker
+    mode="selector"
+    range="{{presets}}"
+    range-key="name"
+    value="{{presetIndex}}"
     bindchange="onPresetChange"
   >
     <view class="header-group">
@@ -27,22 +29,22 @@
         {{globalOffset === 0 ? '标准音高' : (globalOffset + ' Semitones')}}
       </text>
     </view>
-    
+
     <!-- 滑块范围：0 到 -6 (最多降 3 个全音) -->
-    <slider 
-      min="-6" 
-      max="0" 
-      step="1" 
-      value="{{globalOffset}}" 
-      activeColor="#fa7298" 
+    <slider
+      min="-6"
+      max="0"
+      step="1"
+      value="{{globalOffset}}"
+
       block-size="20"
-      bindchanging="onGlobalChange" 
-    />
+      bindchanging="onGlobalChange"
+     activeColor="{{themePrimary}}"/>
   </view>
 
   <!-- 3. 核心：吉他交互区域 -->
   <view class="guitar-head-area">
-    
+
     <!-- 3.1 琴头木质背景 -->
     <view class="headstock-body">
       <text class="brand">Lyra</text>
@@ -91,4 +93,5 @@
 
   <view class="tips">Lyra Tuner · Professional Mode</view>
 
+</view>
 </view>

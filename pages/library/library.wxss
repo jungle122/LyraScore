@@ -1,0 +1,246 @@
+@import "../../utils/songFilters.wxss";
+page {
+  box-sizing: border-box;
+  background-color:var(--page-bg,#f8f8f8);
+}
+
+view, text {
+  box-sizing: border-box;
+}
+
+.container {
+  padding: 30rpx; /* 恢复左右边距 */
+  width: 100%;
+  padding-bottom: 140rpx; /* 给底部操作栏留空间 */
+}
+
+/* 伪搜索框样式 */
+.top-bar {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.search-entry {
+  flex: 1;
+  margin-top: 0;
+}
+
+.manage-btn {
+  height: 80rpx;
+  padding: 0 26rpx;
+  border-radius:40rpx;
+  background:var(--soft);
+  color:var(--primary);
+  font-size: 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border:1rpx solid var(--primary);
+}
+
+.manage-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background:var(--card-bg,#ffffff);
+  border-radius:20rpx;
+  padding: 16rpx 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+  margin-bottom: 20rpx;
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.toolbar-text {
+  font-size: 26rpx;
+  color:var(--text-secondary,#666);
+}
+
+.toolbar-count {
+  font-size: 26rpx;
+  color:var(--text-main,#333);
+}
+
+.toolbar-done {
+  font-size: 26rpx;
+  color:var(--primary);
+}
+
+.search-box {
+  background-color:var(--card-bg,#ffffff); /* 或者 #f0f0f0 看你背景色 */
+  height: 80rpx;
+  border-radius:40rpx; /* 圆圆的胶囊形状 */
+  display: flex;
+  align-items: center;
+  justify-content: center; /* 图标文字居中 */
+
+  /* 给个阴影，让它浮起来 */
+  box-shadow: 0 4rpx 10rpx rgba(0,0,0,0.05);
+  /* 如果背景是白的，给个边框区分一下 */
+  border:1rpx solid var(--border,#eee);
+}
+
+.search-icon {
+  font-size: 30rpx;
+  margin-right: 15rpx;
+}
+
+.search-text {
+  font-size: 28rpx;
+  color:var(--text-muted,#999); /* 浅灰色文字，表示只是提示 */
+}
+/* 卡片样式 */
+.song-card {
+  width: 100%;
+  background-color:var(--card-bg,#ffffff);
+  border-radius:20rpx;
+  padding: 30rpx;
+  margin-bottom: 24rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.select-circle {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius:50%;
+  border:2rpx solid var(--border,#ccc);
+  margin-right: 24rpx;
+  flex-shrink: 0;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.select-circle.checked {
+  background:var(--primary);
+  border-color:var(--primary);
+  transform: scale(1.1);
+}
+
+.select-circle.checked:after {
+  content: '';
+  position: absolute;
+  width: 12rpx;
+  height: 20rpx;
+  border-right:4rpx solid #fff;
+  border-bottom:4rpx solid #fff;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+/* 全选按钮样式 */
+.select-all-circle {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius:50%;
+  border:2rpx solid var(--border,#ccc);
+  flex-shrink: 0;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.select-all-circle.checked {
+  background:var(--primary);
+  border-color:var(--primary);
+  transform: scale(1.1);
+}
+
+.select-all-circle.checked:after {
+  content: '';
+  position: absolute;
+  width: 12rpx;
+  height: 20rpx;
+  border-right:4rpx solid #fff;
+  border-bottom:4rpx solid #fff;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.card-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin-right: 20rpx;
+  min-width: 0;
+}
+
+.song-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color:var(--text-main,#333);
+  margin-bottom: 8rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.song-artist { font-size: 26rpx; color:var(--text-secondary,#666); margin-bottom: 8rpx; }
+.song-meta { font-size: 24rpx; color:var(--text-muted,#999); }
+
+.card-tag {
+  flex-shrink: 0;
+  font-size: 24rpx;
+  padding: 6rpx 16rpx;
+  border-radius:8rpx;
+  font-weight: bold;
+}
+.card-tag.blank { background-color:var(--text-score-bg,#e3f2fd); color:var(--text-score-color,#1976d2); }
+.card-tag.paper { background-color:var(--paper-bg,#f3e5f5); color:var(--paper-color,#ab47bc); }
+/* ✨ 新增：图片标签样式 (橙色) */
+.card-tag.image { background-color:var(--image-bg,#fff7e6); color:#fa8c16; }
+
+.empty-state { margin-top: 200rpx; text-align: center; color:var(--text-muted,#ccc); font-size: 30rpx; }
+
+.action-bar {
+  position: fixed;
+  left: 30rpx;
+  right: 30rpx;
+  bottom: 30rpx;
+  background:var(--card-bg,#ffffff);
+  border-radius:24rpx;
+  padding: 20rpx;
+  display: flex;
+  gap: 20rpx;
+  box-shadow: 0 10rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+.action-btn {
+  flex: 1;
+  height: 80rpx;
+  border-radius:40rpx;
+  background:var(--primary);
+  color:#ffffff;
+  font-size: 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-btn {
+  background:var(--card-bg,#ffffff);
+  color:var(--primary);
+  border:2rpx solid var(--primary);
+}
+
+.action-btn.disabled {
+  opacity: 0.4;
+}
+.empty-state { display: flex; flex-direction: column; gap: 20rpx; color:var(--text-muted,#777); }
+
+.top-bar,.manage-toolbar{height:80rpx;width:100%;margin:0 0 20rpx;padding:0;box-shadow:none;background:transparent;border-radius:0;display:flex;align-items:center;gap:16rpx}
+.manage-toolbar{padding:0 20rpx;background:var(--card-bg,#fff);border-radius:40rpx}
+.search-icon-img{width:32rpx;height:32rpx;margin-right:14rpx}.card-tag.blank{max-width:180rpx;white-space:normal}
+.browse-toolbar{display:flex;align-items:center;gap:16rpx;margin-bottom:20rpx}.browse-control,.browse-picker{width:0;flex:1}.browse-filter,.browse-sort{height:80rpx;width:100%;padding:0;border:0;border-radius:40rpx;background:var(--card-bg,#fff);color:var(--text-secondary,#666);font-size:28rpx;display:flex;align-items:center;justify-content:center;box-sizing:border-box}.browse-filter:after{border:0}.browse-filter.is-active{color:var(--primary);background:var(--soft)}.browse-reset-row{display:flex;justify-content:flex-end;margin:-4rpx 4rpx 20rpx}.browse-reset{color:var(--accent-text);font-size:26rpx}
+
+.search-entry{min-width:0}.manage-btn{flex:0 0 auto}.card-info{min-width:0}.song-title{overflow-wrap:anywhere}.action-btn{color:var(--on-primary,#fff)}.delete-btn{color:var(--accent-text)}

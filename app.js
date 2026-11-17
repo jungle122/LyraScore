@@ -1,5 +1,6 @@
 App({
   onLaunch() {
+    require('./utils/theme').init();
     // ☁️ 云开发初始化
     if (!wx.cloud) {
       console.error('请使用 2.2.3 或以上的基础库以使用云能力');
@@ -18,7 +19,7 @@ App({
   globalShare() {
     return {
       title: 'Lyra吉他谱本 - 你的私人云端琴房 🎸',
-      path: '/pages/practicing/practicing', // ✨ 关键：无论在哪分享，路径都指向首页
+      path: '/pages/library/library', // ✨ 关键：无论在哪分享，路径都指向首页
       imageUrl: '/images/icon.png' // 你可以用那个粉色的 Logo 图当封面
     }
   }

@@ -1,7 +1,10 @@
-<view class="container">
+<page-meta page-style="background-color: {{pageBackground}};" />
+<view class="theme-root" style="{{themeStyle}}">
+<view wx:if="{{loadError}}" class="feedback"><text>{{loadError}}</text><button bindtap="retryLoad">重试</button></view>
+<view class="container" wx:if="{{song}}">
   
   <!-- 顶部导航 -->
-  <view class="nav-bar">
+  <view class="nav-bar" wx:if="{{song}}">
     <!-- 点击这里，打开抽屉 -->
     <view class="menu-btn" bindtap="openDrawer">
       <text style="font-weight:bold; font-size: 40rpx;">···</text>
@@ -39,7 +42,7 @@
         src="{{item}}" 
         mode="widthFix" 
         lazy-load="true" 
-        style="width: 100%; display: block; margin-bottom: 20rpx; background-color: #f0f0f0; min-height: 400rpx;"
+        style="width: 100%; display: block; margin-bottom: 20rpx; background-color: var(--surface-bg); min-height: 400rpx;"
         bindtap="previewImage"
         data-current="{{item}}"
       />
@@ -75,27 +78,14 @@
 <!-- ✨ 自定义抽屉菜单 (完整版) -->
 <!-- ========================= -->
 
-<view class="drawer-mask" wx:if="{{showDrawer}}" bindtap="closeDrawer"></view>
+<view class="drawer-mask" wx:if="{{showDrawer && song}}" bindtap="closeDrawer"></view>
 
-<view class="drawer-panel" wx:if="{{showDrawer}}">
+<view class="drawer-panel" wx:if="{{showDrawer && song}}">
   <text class="drawer-title">更多操作</text>
 
   <view class="menu-group">
-    <!-- ✨ 核心修改：条件判断 -->
-    <!-- 如果状态是 'finished' -->
-    <block wx:if="{{song.status === 'finished'}}">
-      <view class="menu-item" bindtap="markAsPracticing" style="color: #1976d2;">
-        🔄 重新练习
-      </view>
-    </block>
-    <!-- 否则 (也就是 'practicing') -->
-    <block wx:else>
-      <view class="menu-item" bindtap="markAsFinished" style="color: #52c41a;">
-        🎉 标记为已学会
-      </view>
-    </block>
-    
-    <view class="menu-item" bindtap="goToEdit">✏️ 编辑曲谱</view>
+    <view class="menu-item" bindtap="openPlaylistPicker">加入歌单</view>
+    <view class="menu-item" bindtap="goToEdit">编辑曲谱</view>
   </view>
 
   <view class="divider"></view>
@@ -104,7 +94,7 @@
   <view class="control-group">
     <view class="control-header">
       <text class="control-label">屏幕常亮</text>
-      <switch checked="{{isKeepScreenOn}}" bindchange="toggleKeepScreen" color="#FA7298"/>
+      <switch checked="{{isKeepScreenOn}}" bindchange="toggleKeepScreen" color="{{themePrimary}}"/>
     </view>
   </view>
 
@@ -118,16 +108,16 @@
     </view>
     <slider 
       min="24" max="60" value="{{fontSize}}" 
-      activeColor="#333" block-size="18"
+      block-size="18"
       bindchanging="onZoomChange" 
-    />
+     activeColor="{{themePrimary}}"/>
   </view>
 
 <!-- 3. 触感节拍器区 -->
 <view class="control-group">
       <view class="control-header">
         <text class="control-label">节拍器 (声音)</text>
-        <switch checked="{{isPlaying}}" bindchange="toggleMetronome" color="#333"/>
+        <switch checked="{{isPlaying}}" bindchange="toggleMetronome" color="{{themePrimary}}"/>
       </view>
       
       <view wx:if="{{isPlaying}}" style="margin-top: 20rpx;">
@@ -147,14 +137,16 @@
         </view>
         <slider 
           min="40" max="200" value="{{currentBpm}}" 
-          activeColor="#fa7298" block-size="18"
+          block-size="18"
           bindchanging="changeBpm" 
-        />
+         activeColor="{{themePrimary}}"/>
       </view>
     </view>
 
   <view class="divider"></view>
 
   <!-- 4. 底部删除 -->
-  <view class="menu-item delete" bindtap="deleteSong">🗑️ 删除曲谱</view>
+  <view class="menu-item delete" bindtap="deleteSong">移入回收站</view>
+</view><playlist-picker visible="{{showPlaylistPicker}}" song-ids="{{pickerSongIds}}" theme-style="{{themeStyle}}" bindclose="closePlaylistPicker" />
+
 </view>

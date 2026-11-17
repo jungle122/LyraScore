@@ -1,0 +1,24 @@
+<page-meta page-style="background-color: {{pageBackground}};" />
+<view class="theme-root" style="{{themeStyle}}">
+  <view class="container">
+    <view class="playlist-hero"><view class="playlist-cover"><image src="/images/remix/playlist-{{themeIcon}}.png" /></view><view class="playlist-info"><text class="playlist-name">{{name}}</text><text class="muted">{{songList.length}} 首曲谱</text></view></view>
+    <view wx:if="{{error}}" class="feedback"><text>{{error}}</text><button bindtap="load">重试</button></view>
+    <view wx:if="{{loading}}" class="feedback">正在加载曲谱…</view>
+    <block wx:if="{{!missing && !error}}">
+      <view class="page-toolbar" wx:if="{{!isEditMode}}"><button class="button-primary compact" bindtap="openAdd">添加曲谱</button><button class="button-quiet compact" bindtap="toggleManage">管理</button></view>
+      <view class="page-toolbar" wx:else><button class="button-quiet compact" bindtap="selectAll" disabled="{{busy}}">全选</button><text class="muted">已选 {{selectedIds.length}}</text><button class="button-quiet compact" bindtap="toggleManage" disabled="{{busy}}">完成</button></view>
+      <picker class="sort-picker" range="{{sortOptions}}" range-key="label" value="{{sortIndex}}" bindchange="onSortChange"><text>{{sortOptions[sortIndex].label}} ▾</text></picker>
+      <view class="score-row" wx:for="{{songList}}" wx:key="_id" data-id="{{item._id}}" bindtap="tapSong"><text class="selection" wx:if="{{isEditMode}}">{{item.selected ? '●' : '○'}}</text><view class="playlist-info"><text class="score-title">{{item.title}}</text><text class="muted">{{item.artist || '未填写歌手'}} · {{item.storedDateText}}</text></view></view>
+      <view wx:if="{{!loading && !songList.length}}" class="blank-state"><text class="blank-title">歌单里还没有曲谱</text><text>从曲谱库添加，开始整理这份歌单</text><button class="button-primary" bindtap="openAdd">添加曲谱</button></view>
+      <view wx:if="{{isEditMode}}" class="bottom-action"><button class="button-primary" disabled="{{!selectedIds.length || busy}}" bindtap="remove">从歌单移除</button></view>
+    </block>
+    <view wx:if="{{missing}}" class="blank-state">这份歌单已删除，请返回歌单列表</view>
+  </view>
+  <view wx:if="{{showAdd}}" class="filter-overlay" catchtap="closeAdd" catchtouchmove="noop"><view class="filter-sheet" catchtap="noop">
+    <view class="sheet-heading"><text>添加曲谱</text><button class="sheet-close" bindtap="closeAdd" disabled="{{busy}}">关闭</button></view>
+    <input class="sheet-search" placeholder="搜索歌名或歌手" value="{{addKeyword}}" bindinput="inputAdd" />
+    <view wx:if="{{error || addError}}" class="feedback"><text>{{error || addError}}</text><button wx:if="{{error}}" bindtap="openAdd">重新加载</button></view>
+    <scroll-view scroll-y class="song-options"><view wx:for="{{addRows}}" wx:key="_id" class="score-row {{item.already ? 'already-added' : ''}}" bindtap="toggleAdd" data-id="{{item._id}}"><view class="playlist-info"><text class="score-title">{{item.title}}</text><text class="muted">{{item.artist || '未填写歌手'}}</text></view><text class="selection">{{item.already ? '已加入' : (item.checked ? '●' : '○')}}</text></view><view wx:if="{{!loading && !error && !addRows.length}}" class="feedback">没有符合条件的曲谱</view></scroll-view>
+    <button class="button-primary" disabled="{{busy || loading || !!error || missing || !addIds.length}}" bindtap="confirmAdd">{{busy ? '正在添加…' : '添加选中的 ' + addIds.length + ' 首曲谱'}}</button>
+  </view></view>
+</view>

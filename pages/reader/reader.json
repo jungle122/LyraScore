@@ -1,5 +1,7 @@
 {
-  "usingComponents": {},
+  "usingComponents": {
+    "playlist-picker": "/components/playlist-picker/index"
+  },
   "navigationBarTitleText": "查看曲谱",
-  "pageOrientation": "auto" 
+  "pageOrientation": "auto"
 }

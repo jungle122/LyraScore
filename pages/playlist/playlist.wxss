@@ -1,0 +1,2 @@
+@import "../../utils/songFilters.wxss";
+.container{padding:30rpx;padding-bottom:160rpx}

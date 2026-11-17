@@ -1,0 +1,27 @@
+.theme-root{width:100%;min-width:0;min-height:100vh;background:var(--page-bg,#f8f8f8);color:var(--text-main,#333);box-sizing:border-box;--page-gutter:30rpx;--primary:#FA7298;--accent-text:#B93660;--soft:#FFF5F8}
+.theme-root view,.theme-root button,.theme-root input,.theme-root textarea,.theme-root scroll-view{box-sizing:border-box}button::after{border:0}button[disabled]{opacity:.5}
+.page-toolbar{height:80rpx;display:flex;justify-content:space-between;align-items:center;gap:16rpx;margin-bottom:24rpx}
+.button-primary{background:var(--primary);color:#fff;border-radius:40rpx;font-size:28rpx;line-height:80rpx;margin:0}.button-primary[disabled]{background:var(--primary);color:#fff}
+.button-quiet{background:var(--soft);color:var(--accent-text);border-radius:40rpx;font-size:28rpx;line-height:80rpx;margin:0}.compact{padding:0 28rpx}
+.section-count{font-size:28rpx;color:var(--text-secondary,#666)}.muted{display:block;font-size:24rpx;color:var(--text-muted,#777);margin-top:10rpx;overflow-wrap:anywhere}
+.playlist-card,.score-row{display:flex;align-items:center;gap:24rpx;background:var(--card-bg,#fff);border-radius:20rpx;padding:26rpx var(--page-gutter,30rpx);margin-bottom:20rpx}
+.playlist-cover{width:100rpx;height:100rpx;background:var(--soft);border-radius:20rpx;flex-shrink:0;display:flex;align-items:center;justify-content:center}.playlist-cover image{width:48rpx;height:48rpx}
+.playlist-info{flex:1;min-width:0}.playlist-name{display:block;font-size:32rpx;font-weight:600;overflow-wrap:anywhere}.score-title{display:block;font-size:30rpx;overflow-wrap:anywhere}
+.icon-button{padding:10rpx;margin:0;background:transparent;flex-shrink:0;line-height:1}.icon-button image{width:40rpx;height:40rpx}.playlist-hero{display:flex;gap:24rpx;align-items:center;margin-bottom:32rpx}
+.feedback{display:flex;flex-direction:column;gap:16rpx;padding:24rpx;color:var(--text-muted,#777);font-size:26rpx;text-align:center}.feedback button{color:var(--accent-text);background:var(--soft);font-size:26rpx}
+.blank-state{display:flex;flex-direction:column;align-items:center;gap:24rpx;padding:100rpx 20rpx;text-align:center;font-size:26rpx;color:var(--text-muted,#777)}.blank-title{font-size:32rpx;color:var(--text-main,#333);font-weight:600}.blank-state button{padding:0 36rpx;margin-top:10rpx}.empty-icon{width:80rpx;height:80rpx;margin-bottom:8rpx}
+.selection{color:var(--accent-text);font-size:28rpx;flex-shrink:0}.sort-picker{display:block;color:var(--text-secondary,#666);text-align:right;font-size:26rpx;padding:0 0 24rpx}.bottom-action{position:fixed;bottom:0;left:0;right:0;padding:20rpx var(--page-gutter,30rpx) calc(20rpx + env(safe-area-inset-bottom));background:var(--card-bg,#fff)}
+.sheet-search{background:var(--surface-bg,#f5f5f5);border-radius:16rpx;height:80rpx;padding:0 24rpx;font-size:28rpx;margin-bottom:20rpx}.song-options{max-height:45vh;margin-bottom:24rpx}.already-added{opacity:.55}
+
+/* 覆盖 style:v2 的 button:not([size=mini]) 固定宽度，尺寸交给各自布局。 */
+.theme-root button:not([size='mini']){width:auto;min-width:0;margin-left:0;margin-right:0;box-sizing:border-box}
+.theme-root .container{width:100%;min-width:0;padding-left:var(--page-gutter);padding-right:var(--page-gutter)}
+.theme-root input,.theme-root textarea{color:var(--text-main)}
+.page-toolbar .section-count{flex:1;min-width:0}
+.page-toolbar .compact{flex:0 0 auto;padding:0 28rpx}
+.playlist-card .icon-button{flex:0 0 64rpx;width:64rpx;height:64rpx;display:flex;align-items:center;justify-content:center}
+.theme-root .button-primary,.theme-root .button-primary[disabled]{color:var(--on-primary,#fff)}
+.theme-root .trash-clear{flex:0 0 160rpx;margin-left:auto}
+
+/* 图标盒子不受图片基线影响，文字列保留原有对齐方式。 */
+.theme-root .menu-icon-img,.theme-root .search-icon-img,.theme-root .empty-icon,.theme-root .empty-search-icon,.playlist-cover image,.icon-button image{display:block;flex-shrink:0}

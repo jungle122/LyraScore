@@ -1,9 +1,11 @@
+<page-meta page-style="background-color: {{pageBackground}};" />
+<view class="theme-root" style="{{themeStyle}}">
 <view class="container">
   
   <!-- 1. 搜索框区域 -->
   <view class="search-bar">
     <view class="search-input-box">
-      <text class="search-icon">🔍</text>
+      <image class="search-icon-img" src="/images/remix/search-gray.png" />
       <!-- bindinput: 每次打字都触发 -->
       <!-- confirm-type="search": 键盘右下角显示“搜索” -->
       <input 
@@ -18,24 +20,26 @@
     </view>
   </view>
 
+<view wx:if="{{loading}}" class="feedback">正在加载…</view>
+<view wx:if="{{error}}" class="feedback"><text>{{error}}</text><button bindtap="load">重试</button></view>
   <!-- 2. 搜索结果列表 (复用卡片样式) -->
-  <view class="result-area">
+  <view class="result-area" wx:if="{{!error && !loading}}">
     
     <!-- A. 如果有输入，且有结果 -->
     <block wx:if="{{keyword.length > 0 && resultList.length > 0}}">
       <view class="section-header">搜索结果</view>
       <block wx:for="{{resultList}}" wx:key="_id">
-        <view class="song-card" bindtap="goToDetail" data-id="{{item.id}}">
+        <view class="song-card" bindtap="goToDetail" data-id="{{item._id}}">
           <view class="card-info">
             <!-- 这里我们可以做一个小亮点：高亮匹配的文字 (暂时先不做，保持简单) -->
             <text class="song-title">{{item.title}}</text>
             <text class="song-artist" wx:if="{{item.artist}}">{{item.artist}}</text>
             <text class="song-meta">
-              {{item.statusText}}
+              存入时间：{{item.storedDateText}}
             </text>
           </view>
           <view class="card-tag {{item.type}}">
-            {{item.type === 'blank' ? '自制' : (item.type === 'paper' ? '归档' : '图片')}}
+            {{item.type === 'blank' ? '文字谱' : (item.type === 'paper' ? '归档' : '图片')}}
           </view>
         </view>
       </block>
@@ -43,16 +47,16 @@
 
     <!-- B. 如果有输入，但没结果 -->
     <view class="empty-result" wx:if="{{keyword.length > 0 && resultList.length === 0}}">
-      <text>🤔</text>
       <text>找不到和“{{keyword}}”相关的曲谱</text>
     </view>
 
     <!-- C. 初始状态 (没输入) - 显示搜索记录 (根据Page 7草图) -->
     <!-- 暂时不做复杂的历史记录，先显示一个友好的提示 -->
     <view class="empty-start" wx:if="{{keyword.length === 0}}">
-      <text class="big-icon">🔎</text>
+      <image class="empty-search-icon" src="/images/remix/search-gray.png" />
       <text>输入关键词开始搜索</text>
     </view>
 
   </view>
+</view>
 </view>

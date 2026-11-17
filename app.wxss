@@ -1,3 +1,4 @@
+@import "./utils/layout.wxss";
 /* 筛选和排序胶囊样式 */
 .filter-sort {
   margin-top: 20rpx;
@@ -17,14 +18,13 @@
   padding: 10rpx 20rpx;
   margin-right: 10rpx;
   font-size: 26rpx;
-  border-radius: 30rpx;
-  background-color: #f0f0f0;
-  color: #000;
+  border-radius:30rpx;
+  background-color:var(--surface-bg,#f0f0f0);
+  color:var(--text-main,#000);
   text-align: center;
 }
 
 .filter-capsule.active {
-  background-color: #FA7298;
-  color: #fff;
+  background-color:var(--primary);
+  color:#fff;
 }
-

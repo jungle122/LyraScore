@@ -15,7 +15,7 @@ const PRESETS = [
   { name: 'DADGAD',   offsets: [-2, 0, 0, 0, -2, -2] }
 ];
 
-Page({
+Page(require('../../utils/theme').page({
   data: {
     presets: PRESETS,
     presetIndex: 0,
@@ -138,7 +138,7 @@ Page({
   },
   // 分享给朋友
   onShareAppMessage() {
-    return app.globalShare();
+    return getApp().globalShare();
   },
 
   // 分享到朋友圈
@@ -149,4 +149,4 @@ Page({
       imageUrl: '/images/icon.png'
     }
   }
-});
+}));

@@ -1,13 +1,7 @@
-Page({
+Page(require('../../utils/theme').page({
+  goToBlank() { wx.navigateTo({url:'/pages/editor/editor?type=blank'}); },
   // 以前这里全是复杂的弹窗逻辑，现在不需要了！
   // 页面显示就是显示，不需要自动做什么。
-
-  // 1. 跳转到：新建自制谱
-  goToBlank() {
-    wx.navigateTo({
-      url: '/pages/editor/editor?type=blank'
-    });
-  },
 
   // 2. 跳转到：图片谱导入
   goToImage() {
@@ -25,7 +19,7 @@ Page({
 
   // 分享给朋友
   onShareAppMessage() {
-    return app.globalShare();
+    return getApp().globalShare();
   },
 
   // 分享到朋友圈
@@ -36,4 +30,4 @@ Page({
       imageUrl: '/images/icon.png'
     }
   }
-});
+}));
